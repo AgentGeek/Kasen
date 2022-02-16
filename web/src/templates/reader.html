@@ -1,0 +1,26 @@
+{{- define "reader.html" -}}
+  <!DOCTYPE html>
+  <html lang="{{ language }}">
+    {{- template "reader_head" . }}
+    <body>
+      <div class="reader"></div>
+      <noscript>
+        <div class="noscript">
+          <div>
+            <p>You have to enable JavaScript to read this page.</p>
+            <p>
+              Or you can use the <a href="?legacy=true"><strong>legacy reader</strong></a
+              >.
+            </p>
+          </div>
+        </div>
+      </noscript>
+      
+      <script>const readerData = {
+        chapter: {{ .chapter }},
+        chapters: {{ .chapters }},
+        pagination: {{ .pagination }},
+      };</script>
+    </body>
+  </html>
+{{- end }}

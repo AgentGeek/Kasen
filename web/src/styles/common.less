@@ -1,0 +1,483 @@
+@import "normalize";
+@import "variables";
+@import "presets";
+
+*,
+*:before,
+*:after {
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong,
+b,
+figure {
+  margin: 0;
+}
+
+a,
+button {
+  color: inherit;
+  outline: none;
+  text-decoration: none;
+}
+
+button,
+select {
+  cursor: pointer;
+}
+
+img,
+picture {
+  vertical-align: middle;
+  max-width: 100%;
+}
+
+form,
+input,
+select,
+button,
+textarea {
+  font: inherit;
+  letter-spacing: inherit;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  background-color: transparent;
+  border: 0;
+  outline: none;
+
+  color: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+svg,
+[data-feather] {
+  vertical-align: top;
+}
+
+svg:not(:first-child),
+[data-feather]:not(:first-child),
+svg:not(:last-child),
+[data-feather]:not(:last-child) {
+  margin-top: 0.2rem;
+}
+
+svg:first-child:not(:last-child),
+[data-feather]:first-child:not(:last-child) {
+  margin-right: 0.4rem;
+}
+
+svg:last-child:not(:first-child),
+[data-feather]:last-child:not(:first-child) {
+  margin-left: 0.4rem;
+}
+
+svg:first-child:last-child {
+  display: block;
+  margin: auto;
+  height: 100%;
+}
+
+[hidden],
+.hidden {
+  display: none;
+}
+
+[data-feather] {
+  display: inline-block;
+}
+
+h1 {
+  @sz: @fs + 0.6rem;
+  font-size: @sz;
+  line-height: @sz + (@sz*0.25);
+  font-weight: 700;
+}
+
+h2 {
+  @sz: @fs + 0.4rem;
+  font-size: @sz;
+  line-height: @sz + (@sz*0.25);
+  font-weight: 600;
+}
+
+h3 {
+  @sz: @fs + 0.2rem;
+  font-size: @sz;
+  line-height: @sz + (@sz*0.25);
+  font-weight: 600;
+}
+
+strong,
+h4,
+h5,
+h6 {
+  font-weight: 500;
+}
+
+b {
+  font-weight: 600;
+}
+
+small {
+  @sz: @fs - 0.2rem;
+  font-size: @sz;
+  line-height: @sz + (@sz*0.25);
+}
+
+a:hover,
+a:active,
+a:focus-visible,
+button:hover,
+button:active,
+button:focus-visible {
+  color: @blue;
+}
+
+hr {
+  border: 0 solid @border;
+  border-top-width: 0.25rem;
+  margin: @fs 0;
+
+  &:first-child,
+  &:last-child {
+    display: none;
+  }
+}
+
+[contenteditable] {
+  cursor: text;
+  outline: none;
+  border: none;
+}
+
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  font-size: 62.5%;
+}
+
+::-webkit-scrollbar {
+  background-color: @dark;
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: lighten(@dark, 15%);
+
+  &:hover,
+  &:active {
+    background-color: lighten(@dark, 20%);
+  }
+}
+
+body {
+  background-color: #fff;
+
+  font-size: @fs;
+  font-family: "Helvetica Now Display", "Helvetica Neue", "Inter", Helvetica, "Trebuchet MS", Arial, sans-serif;
+  line-height: @fs + (@fs*0.25);
+  letter-spacing: -0.035rem;
+  color: @text;
+
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  > * {
+    width: 100%;
+  }
+
+  > header,
+  > main {
+    max-width: @max-width;
+    margin: 0 auto;
+  }
+
+  > header {
+    background-color: #fff;
+    z-index: 100;
+
+    position: relative;
+    padding: 1rem;
+
+    nav ul {
+      position: relative;
+
+      li {
+        display: inline-block;
+
+        a {
+          font-weight: 600;
+
+          display: block;
+          padding: 0.8rem 1rem;
+        }
+      }
+
+      @media (max-width: 768px) {
+        text-align: center;
+      }
+    }
+  }
+
+  > main {
+    padding: 2rem;
+  }
+
+  > footer {
+    position: relative;
+    margin-top: auto;
+  }
+}
+
+body > footer .credit {
+  text-align: center;
+  padding: 1.8rem 2rem;
+}
+
+body > #error {
+  text-align: center;
+  margin: auto;
+
+  h1,
+  h2 {
+    text-transform: uppercase;
+    font-size: 3.2rem;
+    line-height: 3.6rem;
+
+    &:not(:last-child) {
+      margin-bottom: 1rem;
+    }
+  }
+
+  p ~ p {
+    margin-top: 1rem;
+  }
+}
+
+.wObs {
+  transition: 0.25s ease-in-out opacity;
+
+  &[data-hidden] {
+    opacity: 0;
+  }
+}
+
+#toasts {
+  pointer-events: none;
+
+  z-index: 1001;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+}
+
+#toasts .toastsWrapper {
+  pointer-events: initial;
+  max-width: 60rem;
+  padding: 2rem;
+  margin: auto;
+}
+
+#toasts .toast {
+  transition: 0.25s ease-in-out all;
+
+  box-shadow: 0 0 2.5rem fade(#000, 25%);
+  background-color: @green;
+  border-radius: 0.5rem;
+  color: #fff;
+
+  position: relative;
+  overflow: hidden;
+  display: flex;
+
+  &:not(:first-child) {
+    margin-top: 1rem;
+  }
+
+  &[data-invisible] {
+    opacity: 0;
+  }
+
+  > div {
+    flex: 1 0;
+  }
+
+  > button {
+    color: #fff;
+
+    &:hover,
+    &:active,
+    &:focus-visible {
+      background-color: darken(@green, 5%);
+    }
+  }
+}
+
+#toasts .toast.error {
+  background-color: @red;
+  > button:hover,
+  > button:active,
+  > button:focus-visible {
+    background-color: darken(@red, 5%);
+  }
+}
+
+#toasts .toast .toastContentWrapper,
+#toasts .toast > button {
+  padding: 1.2rem;
+}
+
+#toasts .toast .toastContentWrapper {
+  flex: 1 0;
+}
+
+#modal,
+#modal .modalBg {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#modal {
+  transition: 0.25s ease-in-out opacity;
+  z-index: 1000;
+  position: fixed;
+
+  display: flex;
+  padding: 2rem;
+
+  &[data-invisible] {
+    opacity: 0;
+  }
+}
+
+#modal .modalBg {
+  background: fade(#000, 75%);
+  position: absolute;
+}
+
+#modal .modalContent {
+  box-shadow: 0 0 2.5rem fade(#000, 25%);
+  background-color: #fff;
+
+  z-index: 1;
+  position: relative;
+  overflow: auto;
+
+  width: 100%;
+  max-width: 48rem;
+  max-height: 100%;
+  margin: auto;
+}
+
+#modal .modalTitle {
+  background-color: @dark;
+  color: #fff;
+
+  font-size: 2rem;
+  line-height: 2.4rem;
+
+  z-index: 100;
+  position: sticky;
+  top: 0;
+
+  padding: 1.2rem 2rem;
+}
+
+#modal .modalContentWrapper {
+  padding: 2rem;
+}
+
+#modal .prompt .actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+
+  margin-top: 2rem;
+}
+
+#modal .prompt > small {
+  font-weight: 500;
+
+  display: block;
+  margin-top: 1rem;
+}
+
+.spinner {
+  animation: 2s linear 0s infinite normal none running ls;
+
+  circle {
+    stroke: inherit;
+    fill: transparent;
+    stroke-width: inherit;
+    stroke-dashoffset: 600;
+    stroke-dasharray: 300;
+    stroke-miterlimit: 10;
+    animation: lp 1.6s cubic-bezier(0.4, 0.15, 0.6, 0.85) infinite;
+  }
+
+  @keyframes ls {
+    0% {
+      transform: rotate(0);
+      -webkit-transform: rotate(0);
+    }
+
+    100% {
+      transform: rotate(360deg);
+      -webkit-transform: rotate(360deg);
+    }
+  }
+
+  @keyframes lp {
+    0% {
+      stroke-dashoffset: 600;
+    }
+
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+}

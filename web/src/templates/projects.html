@@ -1,0 +1,461 @@
+{{- define "projects.html" -}}
+  <!DOCTYPE html>
+  <html lang="{{ language }}">
+    {{- template "head" . }}
+    <body>
+      <h1 hidden>{{ .title }}</h1>
+      {{- template "header" . }}
+      <main>
+        <section class="feed" id="projects">
+          <label for="state">
+            <span class="toggle">
+              <span>Search filters{{ if .hasQueries }}{{ " (Active)" }}{{ end }}</span>
+              <i data-feather="chevron-down" width="16" height="16"></i>
+            </span>
+          </label>
+          <input type="checkbox" id="state" />
+          <form class="search" action="/projects">
+            <input type="hidden" name="sort" value="{{ .queries.Sort }}" />
+            <input type="hidden" name="order" value="{{ .queries.Order }}" />
+            <div class="form">
+              <input type="text" name="title" placeholder="Search by title" value="{{ .queries.Title }}" />
+              <button type="submit">
+                <i data-feather="search" width="16" height="16"></i>
+                <strong>Submit</strong>
+              </button>
+            </div>
+            <div class="filters">
+              <div class="projectStatus">
+                <strong>Project Status</strong>
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="projectStatus"
+                      value="ongoing"
+                      {{ if includes .queries.ProjectStatus "ongoing" }}checked{{ end }}
+                    />
+                    <strong class="button">Ongoing</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="projectStatus"
+                      value="finished"
+                      {{ if includes .queries.ProjectStatus "finished" }}checked{{ end }}
+                    />
+                    <strong class="button">Finished</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="projectStatus"
+                      value="dropped"
+                      {{ if includes .queries.ProjectStatus "dropped" }}checked{{ end }}
+                    />
+                    <strong class="button">Dropped</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="excludeProjectStatus">
+                <strong>Project Status (Exclude)</strong>
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeProjectStatus"
+                      value="ongoing"
+                      {{ if includes .queries.ExcludedProjectStatus "ongoing" }}checked{{ end }}
+                    />
+                    <strong class="button">Ongoing</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeProjectStatus"
+                      value="finished"
+                      {{ if includes .queries.ExcludedProjectStatus "finished" }}checked{{ end }}
+                    />
+                    <strong class="button">Finished</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeProjectStatus"
+                      value="dropped"
+                      {{ if includes .queries.ExcludedProjectStatus "dropped" }}checked{{ end }}
+                    />
+                    <strong class="button">Dropped</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="seriesStatus">
+                <strong>Series Status</strong>
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="seriesStatus"
+                      value="ongoing"
+                      {{ if includes .queries.SeriesStatus "ongoing" }}checked{{ end }}
+                    />
+                    <strong class="button">Ongoing</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="seriesStatus"
+                      value="completed"
+                      {{ if includes .queries.SeriesStatus "completed" }}checked{{ end }}
+                    />
+                    <strong class="button">Completed</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="seriesStatus"
+                      value="hiatus"
+                      {{ if includes .queries.SeriesStatus "hiatus" }}checked{{ end }}
+                    />
+                    <strong class="button">Hiatus</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="seriesStatus"
+                      value="cancelled"
+                      {{ if includes .queries.SeriesStatus "cancelled" }}checked{{ end }}
+                    />
+                    <strong class="button">Cancelled</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="excludeSeriesStatus">
+                <strong>Series Status (Exclude)</strong>
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeSeriesStatus"
+                      value="ongoing"
+                      {{ if includes .queries.ExcludedSeriesStatus "ongoing" }}checked{{ end }}
+                    />
+                    <strong class="button">Ongoing</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeSeriesStatus"
+                      value="completed"
+                      {{ if includes .queries.ExcludedSeriesStatus "completed" }}checked{{ end }}
+                    />
+                    <strong class="button">Completed</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeSeriesStatus"
+                      value="hiatus"
+                      {{ if includes .queries.ExcludedSeriesStatus "hiatus" }}checked{{ end }}
+                    />
+                    <strong class="button">Hiatus</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeSeriesStatus"
+                      value="cancelled"
+                      {{ if includes .queries.ExcludedSeriesStatus "cancelled" }}checked{{ end }}
+                    />
+                    <strong class="button">Cancelled</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="demographic">
+                <strong>Demographic</strong>
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="demographic"
+                      value="shounen"
+                      {{ if includes .queries.Demographic "shounen" }}checked{{ end }}
+                    />
+                    <strong class="button">Shounen</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="demographic"
+                      value="shoujo"
+                      {{ if includes .queries.Demographic "shoujo" }}checked{{ end }}
+                    />
+                    <strong class="button">Shoujo</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="demographic"
+                      value="josei"
+                      {{ if includes .queries.Demographic "josei" }}checked{{ end }}
+                    />
+                    <strong class="button">Josei</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="demographic"
+                      value="seinen"
+                      {{ if includes .queries.Demographic "seinen" }}checked{{ end }}
+                    />
+                    <strong class="button">Seinen</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="excludeDemographic">
+                <strong>Demographic (Exclude)</strong>
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeDemographic"
+                      value="shounen"
+                      {{ if includes .queries.ExcludedDemographic "shounen" }}checked{{ end }}
+                    />
+                    <strong class="button">Shounen</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeDemographic"
+                      value="shoujo"
+                      {{ if includes .queries.ExcludedDemographic "shoujo" }}checked{{ end }}
+                    />
+                    <strong class="button">Shoujo</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeDemographic"
+                      value="josei"
+                      {{ if includes .queries.ExcludedDemographic "josei" }}checked{{ end }}
+                    />
+                    <strong class="button">Josei</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeDemographic"
+                      value="seinen"
+                      {{ if includes .queries.ExcludedDemographic "seinen" }}checked{{ end }}
+                    />
+                    <strong class="button">Seinen</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="rating">
+                <strong>Content Rating</strong>
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="rating"
+                      value="safe"
+                      {{ if includes .queries.Rating "safe" }}checked{{ end }}
+                    />
+                    <strong class="button">Safe</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="rating"
+                      value="suggestive"
+                      {{ if includes .queries.Rating "suggestive" }}checked{{ end }}
+                    />
+                    <strong class="button">Suggestive</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="rating"
+                      value="erotica"
+                      {{ if includes .queries.Rating "erotica" }}checked{{ end }}
+                    />
+                    <strong class="button">Erotica</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="rating"
+                      value="pornographic"
+                      {{ if includes .queries.Rating "pornographic" }}checked{{ end }}
+                    />
+                    <strong class="button">Pornographic</strong>
+                  </label>
+                </div>
+              </div>
+              <div class="excludeRating">
+                <strong>Content Rating (Exclude)</strong>
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeRating"
+                      value="safe"
+                      {{ if includes .queries.ExcludedRating "safe" }}checked{{ end }}
+                    />
+                    <strong class="button">Safe</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeRating"
+                      value="suggestive"
+                      {{ if includes .queries.ExcludedRating "suggestive" }}checked{{ end }}
+                    />
+                    <strong class="button">Suggestive</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeRating"
+                      value="erotica"
+                      {{ if includes .queries.ExcludedRating "erotica" }}checked{{ end }}
+                    />
+                    <strong class="button">Erotica</strong>
+                  </label>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="excludeRating"
+                      value="pornographic"
+                      {{ if includes .queries.ExcludedRating "pornographic" }}checked{{ end }}
+                    />
+                    <strong class="button">Pornographic</strong>
+                  </label>
+                </div>
+              </div>
+              {{- if .tags }}
+                {{- $queries := .queries }}
+                <div class="tag">
+                  <strong>Tags</strong>
+                  <div>
+                    {{- range .tags }}
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="tag"
+                          value="{{ .Slug }}"
+                          {{ if includes $queries.Tags .Slug }}checked{{ end }}
+                        />
+                        <strong class="button">{{ .Name }}</strong>
+                      </label>
+                    {{- end }}
+                  </div>
+                </div>
+                <div class="excludeTag">
+                  <strong>Tags (Exclude)</strong>
+                  <div>
+                    {{- range .tags }}
+                      <label>
+                        <input
+                          type="checkbox"
+                          name="excludeTag"
+                          value="{{ .Slug }}"
+                          {{ if includes $queries.ExcludedTags .Slug }}checked{{ end }}
+                        />
+                        <strong class="button">{{ .Name }}</strong>
+                      </label>
+                    {{- end }}
+                  </div>
+                </div>
+              {{- end }}
+            </div>
+          </form>
+          <header>
+            {{- if .hasQueries }}
+              <h2>Search Projects ({{ .total }})</h2>
+            {{- else }}
+              <h2>Browse Projects ({{ .total }})</h2>
+            {{- end }}
+          </header>
+          {{- if .projects }}
+            <div class="entries grid gap25">
+              {{- range .projects }}
+                <article class="entry">
+                  <a href="/projects/{{ .ID }}/{{ .Slug }}" title="{{ .Title }}">
+                    <figure class="cover">
+                      {{- if .Cover }}
+                        {{- $cover := (.Cover.Path .) }}
+                        <picture>
+                          <source srcset="/{{ $cover }}/512.jpg" media="(max-width: 425px)" />
+                          <img
+                            alt="Cover art for {{ .Title }}"
+                            title="{{ .Title }}"
+                            src="/{{ $cover }}/320.jpg"
+                            loading="lazy"
+                          />
+                        </picture>
+                      {{- end }}
+                      {{- if .ProjectStatus }}
+                        <small class="projectStatus">{{ .ProjectStatus | titleCase }}</small>
+                      {{- end }}
+                    </figure>
+                    <div class="metadata">
+                      <h3 class="title">{{ .Title }}</h3>
+                      {{- if .Tags }}
+                        <span class="tags">
+                          {{- range $i, $v := .Tags -}}
+                            {{- if lt $i 6 -}}
+                              {{- if $i -}}{{ ", " }}{{- end -}}
+                              {{- .Name -}}
+                            {{- end -}}
+                          {{- end -}}
+                        </span>
+                      {{- end }}
+                    </div>
+                  </a>
+                </article>
+              {{- end }}
+            </div>
+            {{- if gt .pagination.TotalPages 1 }}
+              <nav class="pagination" aria-label="Page">
+                <ul>
+                  <li class="first">
+                    <a href="/projects" title="First page">
+                      <i data-feather="chevrons-left" width="20" height="20" strokeWidth="3"></i>
+                    </a>
+                  </li>
+                  {{- $query := .query }}
+                  {{- $currentPage := .pagination.CurrentPage }}
+                  {{- range .pagination.Pages }}
+                    <li>
+                      <a {{ if eq $currentPage . }}class="active"{{ end }} href="{{ setQuery $query "page" . }}">
+                        <strong>{{ . }}</strong>
+                      </a>
+                    </li>
+                  {{- end }}
+                  <li class="last">
+                    <a href="?page={{ .pagination.TotalPages }}" title="Last page">
+                      <i data-feather="chevrons-right" width="20" height="20" strokeWidth="3"></i>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            {{- end }}
+          {{- else }}
+            <div class="empty">
+              {{- if .hasQueries }}
+                <h3>No results found</h3>
+                <p>There are no results that match your search.</p>
+              {{- else }}
+                <p>Not yet available</p>
+              {{- end }}
+            </div>
+          {{- end }}
+        </section>
+      </main>
+      {{- template "footer" . }}
+    </body>
+  </html>
+{{- end }}

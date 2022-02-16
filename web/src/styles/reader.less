@@ -1,0 +1,542 @@
+@import "variables";
+
+@reader-bg: rgb(18, 18, 18);
+@reader-text: rgb(158, 158, 158);
+@reader-border: rgb(48, 48, 48);
+@reader-sidebar-bg: rgb(24, 24, 24);
+
+.reader {
+  background-color: @reader-bg;
+
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.8rem;
+  letter-spacing: initial;
+
+  text-align: center;
+  color: @reader-text;
+
+  align-items: flex-start;
+  display: flex;
+  flex-direction: row;
+
+  a:hover,
+  a:focus-visible,
+  button:hover,
+  button:focus-visible {
+    color: lighten(@reader-text, 10%);
+  }
+}
+
+.noscript {
+  text-align: center;
+
+  display: flex;
+  padding: 2rem;
+  min-height: 100vh;
+
+  div {
+    margin: auto;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+}
+
+.reader#legacy #state,
+.reader#legacy #state:not(:checked) + aside,
+.reader:not(#legacy) aside[data-hidden] {
+  display: none;
+}
+
+.reader aside {
+  background-color: @reader-sidebar-bg;
+
+  position: sticky;
+  overflow: auto;
+  top: 0;
+  z-index: 100;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 30rem;
+  max-width: 90vw;
+  height: 100vh;
+
+  > header,
+  > footer {
+    background-color: lighten(@reader-sidebar-bg, 3%);
+  }
+
+  > header {
+    > * {
+      border-bottom: 0.2rem solid @reader-border;
+    }
+
+    h1 {
+      font-size: inherit;
+      font-weight: 600;
+      line-height: inherit;
+
+      padding: 1rem;
+
+      a {
+        display: block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+    }
+
+    > nav ul {
+      overflow: hidden;
+      display: flex;
+
+      li {
+        flex: 1 0;
+
+        &:nth-child(2):not(:last-child) {
+          flex: initial;
+        }
+
+        &.disabled > * {
+          cursor: default;
+          opacity: 0.25;
+
+          &:hover,
+          &:focus-visible {
+            color: @reader-text;
+          }
+        }
+
+        &:not(:last-child) {
+          border-right: 0.2rem solid @reader-border;
+        }
+
+        > * {
+          font-weight: 600;
+          text-transform: uppercase;
+
+          display: block;
+          padding: 0.6rem 0.8rem;
+        }
+      }
+    }
+  }
+
+  > footer {
+    > * {
+      border-top: 0.2rem solid @reader-border;
+    }
+
+    > nav {
+      display: flex;
+
+      > * {
+        padding: 0.8rem 1rem;
+
+        &:not(:last-child) {
+          border-right: 0.2rem solid @reader-border;
+        }
+      }
+
+      > div {
+        position: relative;
+        flex: 1 0;
+
+        font-weight: 600;
+
+        select {
+          background-color: @reader-sidebar-bg;
+          text-align: center;
+          cursor: pointer;
+          opacity: 0;
+
+          position: absolute;
+          top: 0;
+          left: 0;
+
+          width: 100%;
+          height: 100%;
+          padding: 1rem;
+        }
+      }
+    }
+  }
+}
+
+.reader aside .body {
+  overflow: auto;
+  flex: 1 0;
+  height: 0;
+
+  &::-webkit-scrollbar {
+    width: 0;
+  }
+}
+
+.reader aside .chapters {
+  text-align: left;
+
+  li {
+    &:not(:first-child) {
+      border-top: 0.1rem dashed @reader-border;
+    }
+
+    a {
+      padding: 0.6rem 0.8rem;
+      display: block;
+    }
+
+    &.active a {
+      color: lighten(@reader-text, 10%);
+      box-shadow: inset -0.8rem 0 lighten(@reader-sidebar-bg, 10%);
+      font-weight: 600;
+    }
+  }
+}
+
+.reader main {
+  flex: 1 0;
+  display: flex;
+  flex-direction: column;
+
+  width: 0;
+  max-width: initial;
+  min-height: 100vh;
+  padding: 0;
+
+  footer {
+    border-top: 0.4rem dashed @reader-border;
+    margin-top: auto;
+
+    a {
+      font-size: 2rem;
+      font-weight: 600;
+      text-transform: uppercase;
+
+      display: block;
+      padding: 2rem;
+    }
+  }
+}
+
+@toggle-color: rgb(40, 120, 40);
+.reader main .toggle {
+  transition: 0.25s ease-in-out opacity, 0.25s ease-in-out color;
+  cursor: pointer;
+
+  font-size: 0;
+  color: transparent;
+
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 101;
+
+  @sz: 4.8rem;
+  width: @sz;
+  height: @sz;
+
+  &:not(:hover):not(:focus-visible) {
+    opacity: 0.25;
+  }
+
+  &:before {
+    content: "";
+    border: 0 solid @toggle-color;
+    border-width: (@sz / 2);
+    border-bottom-color: transparent !important;
+    border-right-color: transparent !important;
+    display: block;
+  }
+
+  &:after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0.2rem;
+    height: 100vh;
+  }
+
+  &:hover:before {
+    border-color: lighten(@toggle-color, 5%);
+  }
+}
+
+.reader#legacy #state:checked + aside + main .toggle,
+.reader:not(#legacy) aside:not([data-hidden]) + main .toggle {
+  @sz: 2.4rem;
+
+  width: @sz;
+  height: @sz;
+
+  &:before {
+    border-width: (@sz / 2);
+  }
+}
+
+.reader main .switchReader {
+  display: block;
+  padding: 1rem 1.2rem;
+}
+
+.reader .pages {
+  flex: 1 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.reader .page {
+  position: relative;
+  margin: auto;
+
+  ~ .page {
+    margin-top: 2rem;
+  }
+}
+
+.reader#legacy .page {
+  a {
+    font-size: 0;
+    color: transparent;
+
+    position: absolute;
+    width: 33.333%;
+
+    top: 0;
+    bottom: 0;
+  }
+
+  .previous {
+    left: 0;
+  }
+
+  .next {
+    right: 0;
+  }
+}
+
+.reader:not(#legacy) .page img {
+  cursor: pointer;
+}
+
+.reader .page .loading {
+  position: relative;
+  overflow: hidden;
+  height: 0;
+  padding-top: calc(3 / 2 * 100vh);
+
+  div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+  }
+}
+
+.settings {
+  background-color: fade(#000, 75%);
+  text-align: left;
+
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+}
+
+.settings > .wrapper {
+  background-color: @reader-sidebar-bg;
+  border-radius: 0.5rem;
+  position: relative;
+  overflow: hidden;
+
+  min-width: 48rem;
+  max-width: 68rem;
+  max-height: calc(100vh - 4rem);
+  margin: auto;
+}
+
+.settings > button {
+  text-align: center;
+  display: block;
+  margin: auto;
+}
+
+.settings header {
+  background-color: lighten(@reader-sidebar-bg, 3%);
+  display: flex;
+
+  h2 {
+    font-size: 1.6rem;
+    line-height: 2rem;
+
+    flex: 1 0;
+    width: 0;
+    padding: 0.8rem 1.2rem;
+  }
+
+  button {
+    padding: 0.8rem 1.2rem;
+  }
+}
+
+.settings > .wrapper > div {
+  position: relative;
+  overflow: auto;
+
+  max-height: calc(100vh - 8rem);
+  padding: 1rem;
+
+  > * ~ * {
+    margin-top: 1rem;
+  }
+
+  h3 {
+    border-bottom: 0.2rem solid @reader-border;
+    font-size: 1.4rem;
+    line-height: 1.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.045rem;
+
+    padding-bottom: 0.2rem;
+  }
+
+  strong {
+    min-width: 8rem;
+  }
+
+  input,
+  input + span.unit,
+  select {
+    background-color: lighten(@reader-sidebar-bg, 3%);
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.8rem;
+  }
+
+  input:first-child:not(:last-child) {
+    border-radius: 0.5rem 0 0 0.5rem;
+    text-align: right;
+
+    padding-right: 0;
+  }
+
+  select,
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+
+  input[type="checkbox"] {
+    position: relative;
+    overflow: hidden;
+
+    width: 4rem;
+    padding: 1rem 1.2rem;
+
+    &::before {
+      content: "";
+      transition: 0.25s ease-in-out left, 0.25s ease-in-out right;
+      background-color: rgb(180, 40, 40);
+
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 50%;
+    }
+
+    &:checked:before {
+      background-color: rgb(40, 120, 40);
+      left: 50%;
+    }
+  }
+
+  input + span.unit {
+    border-radius: 0 0.4rem 0.4rem 0;
+    padding-left: 0;
+  }
+
+  select + svg {
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+
+    width: 2.8rem;
+    height: 100%;
+
+    margin: 0;
+    padding: 0.6rem;
+  }
+
+  select:hover + svg {
+    color: lighten(@reader-text, 10%);
+  }
+}
+
+.settings .checkbox,
+.settings .select,
+.settings .input {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+
+  div {
+    position: relative;
+
+    flex: 1 0;
+    width: 0;
+  }
+}
+
+.settings .checkbox {
+  text-align: right;
+}
+
+.settings .select div,
+.settings .input div {
+  display: flex;
+
+  select,
+  input {
+    flex: 1 0;
+    width: 0;
+  }
+}
+
+.settings .group {
+  display: flex;
+  gap: 1rem;
+
+  > * {
+    flex: 1 0;
+    width: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .reader aside {
+    position: fixed;
+  }
+
+  .reader#legacy #state:checked + aside + main .toggle,
+  .reader:not(#legacy) aside:not([data-hidden]) + main .toggle {
+    background-color: fade(#000, 75%);
+
+    z-index: 99;
+    width: 100vw;
+    height: 100vh;
+
+    &:before {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,194 @@
+{{- define "project.html" -}}
+  <!DOCTYPE html>
+  <html lang="{{ language }}">
+    {{- template "head" . }}
+    <body>
+      {{- template "header" . }}
+      <main class="view" id="project">
+        <div class="main">
+          <h1 class="title">{{ .project.Title }}</h1>
+          <div class="description">
+            {{- if .project.Description }}
+              {{ markdown .project.Description }}
+            {{- else }}
+              <p>No description.</p>
+            {{- end }}
+          </div>
+          <section class="chapters">
+            <h2>Chapters{{- if .totalChapters }}{{ " " }}({{ .totalChapters }}){{- end }}</h2>
+            {{- if .project.Chapters }}
+              <div class="entries">
+                {{- range .project.Chapters }}
+                  <article class="entry">
+                    <div class="metadata">
+                      {{- $title := (formatChapter .) }}
+                      <h3 class="title" title="{{ $title }}">
+                        <a href="/chapters/{{ .ID }}">
+                          <span>{{ $title }}</span>
+                        </a>
+                      </h3>
+                      <div class="metadata-line-group">
+                        <div class="metadata-line-left">
+                          {{- $createdAt := (moment .CreatedAt ) }}
+                          <span class="createdAt" title="Released {{ $createdAt }}">
+                            <i data-feather="clock" width="14" height="14" strokeWidth="3"></i
+                            ><time>{{ $createdAt }}</time>
+                          </span>
+                          <span class="uploader" title="Uploader">
+                            <i data-feather="user" width="14" height="14" strokeWidth="3"></i
+                            ><a href="/chapters?uploader={{ .Uploader.Name }}">{{ .Uploader.Name }}</a>
+                          </span>
+                          {{- if .ScanlationGroups }}
+                            <span class="groups" title="Scanlation Groups">
+                              <i data-feather="users" width="14" height="14" strokeWidth="3"></i>
+                              {{- $len := (dec (len .ScanlationGroups)) -}}
+                              {{- range $i, $v := .ScanlationGroups -}}
+                                {{- if $i -}}
+                                  {{- if eq $i $len -}}{{- " & " -}}{{- else -}},{{- end -}}
+                                {{- end -}}
+                                <a href="/chapters?scanlation_group={{ .Slug }}">{{ .Name }}</a>
+                              {{- end -}}
+                            </span>
+                          {{- end }}
+                        </div>
+                        <div class="metadata-line-right">
+                          <span class="viewCount" title="View count">
+                            <i data-feather="eye" width="14" height="14" strokeWidth="3"></i
+                            ><span>{{ .Stats.ViewCount }}</span>
+                          </span>
+                          <a href="/chapters/{{ .ID }}?download=true" download>
+                            <i data-feather="download" width="14" height="14" strokeWidth="3"></i><span>Download</span>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                {{- end }}
+              </div>
+              {{- if gt .pagination.TotalPages 1 }}
+                <nav class="pagination" aria-label="Chapters">
+                  <ul>
+                    <li class="first">
+                      <a href="/projects/{{ .project.ID }}/{{ .project.Slug }}" title="First page">
+                        <i data-feather="chevrons-left" width="20" height="20" strokeWidth="3"></i>
+                      </a>
+                    </li>
+                    {{- $currentPage := .pagination.CurrentPage }}
+                    {{- range .pagination.Pages }}
+                      <li>
+                        <a {{ if eq $currentPage . }}class="active"{{ end }} href="?page={{ . }}">
+                          <strong>{{ . }}</strong>
+                        </a>
+                      </li>
+                    {{- end }}
+                    <li class="last">
+                      <a href="?page={{ .pagination.TotalPages }}" title="Last page">
+                        <i data-feather="chevrons-right" width="20" height="20" strokeWidth="3"></i>
+                      </a>
+                    </li>
+                  </ul>
+                </nav>
+              {{- end }}
+            {{- else }}
+              <div class="empty">
+                <p>This project has no chapters.</p>
+              </div>
+            {{- end }}
+          </section>
+        </div>
+        <div class="sidebar">
+          <div class="wrapper">
+            <div class="cover">
+              {{- if .project.Cover }}
+                <picture>
+                  {{- $cover := ( .project.Cover.Path .project ) }}
+                  <source srcset="/{{ $cover }}/512.jpg" media="(max-width: 425px)" />
+                  <img
+                    alt="Cover art for {{ .project.Title }}"
+                    title="{{ .project.Title }}"
+                    src="/{{ $cover }}/320.jpg"
+                    loading="lazy"
+                  />
+                </picture>
+              {{- end }}
+            </div>
+          </div>
+          <section class="metadata">
+            {{- if .project.ProjectStatus }}
+              <div>
+                <b>Project Status</b>
+                <a href="/projects?projectStatus={{ .project.ProjectStatus | lowerCase }}"
+                  >{{ .project.ProjectStatus | titleCase }}</a
+                >
+              </div>
+            {{- end }}
+            {{- if .project.SeriesStatus }}
+              <div>
+                <b>Series Status</b>
+                <a href="/projects?seriesStatus={{ .project.SeriesStatus | lowerCase }}"
+                  >{{ .project.SeriesStatus | titleCase }}</a
+                >
+              </div>
+            {{- end }}
+            {{- if and .project.Demographic (ne .project.Demographic "none") }}
+              <div>
+                <b>Demographic</b>
+                <a href="/projects?demographic={{ .project.Demographic | lowerCase }}"
+                  >{{ .project.Demographic | titleCase }}</a
+                >
+              </div>
+            {{- end }}
+            {{- if and .project.Rating (ne .project.Rating "none") }}
+              <div>
+                <b>Content Rating</b>
+                <a href="/projects?rating={{ .project.Rating | lowerCase }}">{{ .project.Rating | titleCase }}</a>
+              </div>
+            {{- end }}
+            {{- if .project.Artists }}
+              <div>
+                <b>Artists</b>
+                {{- range $i, $v := .project.Artists }}
+                  {{- if $i }}{{ ", " }}{{- end }}
+                  <a href="/projects?author={{ .Slug }}">{{ .Name }}</a>
+                {{- end }}
+              </div>
+            {{- end }}
+            {{- if .project.Authors }}
+              <div>
+                <b>Authors</b>
+                <span>
+                  {{- range $i, $v := .project.Authors }}
+                    {{- if $i }}{{ ", " }}{{- end }}
+                    <a href="/projects?author={{ .Slug }}">{{ .Name }}</a>
+                  {{- end }}
+                </span>
+              </div>
+            {{- end }}
+            {{- if .project.Tags }}
+              <div>
+                <b>Tags</b>
+                {{- range $i, $v := .project.Tags }}
+                  {{- if $i }}{{ ", " }}{{- end }}
+                  <a href="/projects?tag={{ .Slug }}">{{ .Name }}</a>
+                {{- end }}
+              </div>
+            {{- end }}
+            {{- if .project.Stats }}
+              <div>
+                <b>Views</b>
+                <span>{{ .project.Stats.ViewCount }}</span>
+              </div>
+            {{- end }}
+            {{- if .project.UpdatedAt }}
+              <div>
+                <b>Last Updated</b>
+                <span>{{ formatUnix .project.UpdatedAt "2006-01-02 15:04 MST" }}</span>
+              </div>
+            {{- end }}
+          </section>
+        </div>
+      </main>
+      {{- template "footer" . }}
+    </body>
+  </html>
+{{- end }}

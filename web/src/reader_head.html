@@ -1,0 +1,70 @@
+{{- define "reader_head" -}}
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {{- $title := .title }}
+    {{- if .project }}
+      {{- $title = printf "%s - %s" .project.Title $title }}
+    {{- else if .chapter }}
+      {{- $title = printf "%s | %s - %s" (formatChapter .chapter) .chapter.Project.Title $title }}
+    {{- else }}
+      {{- $title = printf "%s - %s" .name $title }}
+    {{- end }}
+    <title>{{ $title }}</title>
+
+    <meta property="og:title" content="{{ $title }}" />
+    <meta property="twitter:title" content="{{ $title }}" />
+    {{- if .description }}
+      <meta name="description" content="{{ .description }}" />
+      <meta property="og:description" content="{{ .description }}" />
+      <meta name="twitter:description" content="{{ .description }}" />
+    {{- end }}
+    {{- if .project }}
+      <meta property="og:image" content="{{ baseURL }}/{{ .project.Cover.Path .project }}" />
+      <meta property="og:image:alt" content="{{ .project.Title }}" />
+      <meta name="twitter:image" content="{{ baseURL }}/{{ .project.Cover.Path .project }}" />
+      <meta name="twitter:image:alt" content="{{ .project.Title }}" />
+    {{- end }}
+    <meta name="application-name" content="{{ .title }}" />
+    <meta name="theme-color" content="#1a1a1a" />
+    <meta name="robots" content="index,follow" />
+    <meta name="googlebot" content="index,follow" />
+    <meta name="google" content="nositelinkssearchbox" />
+    <meta name="generator" content="Kasen" />
+    {{- if .googleSiteVerification }}
+      <meta name="google-site-verification" content="{{ .googleSiteVerification }}" />
+    {{- end }}
+    {{- if .yandexVerification }}
+      <meta name="yandex-verification" content="{{ .yandexVerification }}" />
+    {{- end }}
+    {{- if .bingVerification }}
+      <meta name="msvalidate.01" content="{{ .bingVerification }}" />
+    {{- end }}
+    {{- if .alexaVerification }}
+      <meta name="alexaVerifyID" content="{{ .alexaVerification }}" />
+    {{- end }}
+    <meta property="og:site_name" content="{{ .title }}" />
+    <meta property="og:url" content="{{ .url }}" />
+    {{- if .project }}
+      <meta property="og:type" content="article" />
+    {{- else }}
+      <meta property="og:type" content="website" />
+    {{- end }}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:url" content="{{ .url }}" />
+    <link rel="canonical" href="{{ .url }}" />
+
+    <link rel="alternate" type="application/rss+xml" href="{{ baseURL }}/rss/projects" title="Project RSS" />
+    <link rel="alternate" type="application/atom+xml" href="{{ baseURL }}/atom/projects" title="Project Atom" />
+    <link rel="alternate" type="application/rss+xml" href="{{ baseURL }}/rss/chapters" title="Chapter RSS" />
+    <link rel="alternate" type="application/atom+xml" href="{{ baseURL }}/atom/chapters" title="Chapter Atom" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      crossorigin="anonymous"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+{{- end }}

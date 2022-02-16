@@ -1,0 +1,41 @@
+{{- define "register.html" -}}
+  <!DOCTYPE html>
+  <html lang="{{ language }}">
+    {{- template "head" . }}
+    <body id="register">
+      {{- template "header" . }}
+      <main id="auth">
+        <h1>Register</h1>
+        {{- if .error }}
+          <div class="error">
+            <p>{{ .error }}</p>
+          </div>
+        {{- end }}
+        <form method="post">
+          <input
+            name="name"
+            type="text"
+            placeholder="Name"
+            minlength="3"
+            maxlength="32"
+            autocomplete="off"
+            data-lpignore="true"
+            required
+          />
+          <input
+            name="email"
+            type="email"
+            placeholder="Email address"
+            maxlength="255"
+            data-lpignore="true"
+            autocomplete="off"
+            required
+          />
+          <input name="password" type="password" placeholder="Password" minlength="6" data-lpignore="true" required />
+          <button type="submit">Submit</button>
+        </form>
+      </main>
+      {{- template "footer" . }}
+    </body>
+  </html>
+{{- end }}

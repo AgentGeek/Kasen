@@ -1,0 +1,898 @@
+@import "variables";
+
+#manage {
+  align-items: flex-start;
+  display: flex;
+  gap: 2rem;
+
+  max-width: @max-width;
+  min-height: 100vh;
+  padding: 2rem;
+  margin: auto;
+}
+
+#sidebar {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 2rem;
+
+  flex-shrink: 0;
+  width: 20rem;
+  margin: initial;
+}
+
+#sidebar nav,
+#sidebar .actions {
+  border: 0.1rem solid @border;
+  border-radius: 0.5rem;
+
+  position: relative;
+  overflow: hidden;
+
+  li:not(:first-child),
+  > a:not(:first-child) {
+    border-top: 0.1rem solid @border;
+  }
+
+  a {
+    transition: 0.25s ease-in-out background-color, 0.25s ease-in-out box-shadow;
+    font-weight: 500;
+
+    display: block;
+    padding: 0.6rem 0.8rem;
+
+    &.active {
+      box-shadow: inset 0.2rem 0 @border;
+      color: @blue;
+
+      &:hover,
+      &:active,
+      &:focus-visible {
+        color: lighten(@blue, 10%);
+      }
+    }
+  }
+}
+
+#sidebar .actions {
+  margin-top: 1rem;
+}
+
+#sidebar .actions .logout {
+  font-weight: 600;
+  color: @red;
+
+  &:hover,
+  &:active,
+  &:focus-visible {
+    color: lighten(@red, 10%);
+  }
+}
+
+#manage > main {
+  flex: 1 0;
+  flex-direction: column;
+  display: flex;
+  min-height: calc(100vh - 4rem);
+}
+
+#manage > main > .loading {
+  margin: auto;
+}
+
+.feed > header {
+  position: relative;
+  z-index: 2;
+  margin-bottom: -1rem;
+
+  display: flex;
+  gap: 1rem;
+}
+
+.feed > header .title {
+  flex: 1 0;
+}
+
+.feed > header .new {
+  font-weight: 500;
+}
+
+.feed .filters {
+  background-color: #fff;
+  white-space: nowrap;
+
+  z-index: 1;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+
+  margin: -0.2rem -1rem 0;
+  padding: 2rem 1rem 0;
+
+  > div,
+  > form {
+    border: 0 solid @border;
+    border-width: 0.2rem 0;
+
+    b,
+    strong,
+    select,
+    input,
+    button {
+      padding: 0.6rem 1.2rem;
+    }
+
+    select,
+    > button {
+      font-weight: 500;
+    }
+
+    select,
+    > button,
+    div {
+      color: @text;
+
+      &:hover,
+      &:active,
+      &:focus-visible,
+      &:focus-within {
+        background-color: lighten(@light, 2.5%);
+      }
+    }
+
+    div {
+      button {
+        color: lighten(@gray, 10%);
+
+        &:hover,
+        &:active,
+        &:focus-visible {
+          color: darken(@gray, 5%);
+        }
+      }
+    }
+  }
+}
+
+.feed .filters .sort {
+  position: relative;
+
+  &::after {
+    content: "";
+
+    transform: rotate(45deg);
+
+    border: 0 solid @text;
+    border-bottom-width: 0.2rem;
+    border-right-width: 0.2rem;
+
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+
+    width: 0.8rem;
+    height: 0.8rem;
+  }
+
+  select {
+    padding-right: 2.4rem;
+  }
+}
+
+.feed .filters .order {
+  border: 0 solid @border;
+  border-width: 0 0.2rem;
+}
+
+.feed .filters .search {
+  flex: 1 0;
+  display: flex;
+  width: 0;
+
+  input {
+    flex: 1 0;
+    width: 0;
+  }
+}
+
+.feed .entries[data-empty] {
+  margin: auto;
+}
+
+.feed .entries .empty {
+  text-align: center;
+  padding: 1rem;
+}
+
+.feed .entry,
+.feed .entry {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+
+  &:not(:first-child) {
+    border-top: 0.2rem dashed @border;
+  }
+
+  &[data-deleted] {
+    pointer-events: none;
+    > * {
+      opacity: 0.25;
+    }
+  }
+}
+
+.feed#projects .entry {
+  min-height: 12rem;
+}
+
+.feed#chapters .entry {
+  min-height: 14rem;
+}
+
+.feed .entry .cover {
+  box-shadow: 0 0 1rem fade(#000, 25%);
+  background-image: linear-gradient(180deg, @dark 50%, #000);
+  border-radius: 0.5rem;
+
+  position: relative;
+  overflow: hidden;
+
+  width: 6.4rem;
+  height: 0;
+  padding-top: calc(3 / 2 * 100%);
+
+  img {
+    position: absolute;
+    top: 0;
+  }
+}
+
+.feed .entry .metadata {
+  line-height: 2.2rem;
+  flex: 1 0;
+
+  div > span {
+    white-space: nowrap;
+  }
+}
+
+.feed .entry .metadata .title {
+  font-size: 1.6rem;
+  line-height: 2.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.feed .entry .metadata .projectTitle {
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.8rem;
+
+  margin-bottom: 0.4rem;
+
+  a {
+    color: @gray;
+
+    &:hover,
+    &:active,
+    &:focus-visible {
+      color: @blue;
+    }
+  }
+}
+
+.feed .entry .metadata .status {
+  background-color: darken(@light, 2.5%);
+  border-radius: 0.4rem;
+
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.8rem;
+  text-transform: uppercase;
+
+  padding: 0.2rem 0.4rem;
+  margin-right: 0.4rem;
+}
+
+.feed .entry .metadata .separator {
+  font-weight: 500;
+  margin: 0 0.8rem;
+}
+
+.feed .entry .metadata .actions {
+  margin-top: 0.8rem;
+
+  > *,
+  > * {
+    display: inline-block;
+    margin-right: 1rem;
+  }
+}
+
+.feed .entry:not([data-published]) .metadata .actions .view,
+.feed .entry[data-locked] .metadata .actions .publishState,
+.feed .entry[data-locked] .metadata .actions .delete {
+  pointer-events: none;
+  cursor: initial;
+  opacity: 0.5;
+}
+
+.feed .pagination ul {
+  text-align: center;
+
+  li {
+    vertical-align: top;
+    display: inline-block;
+
+    a {
+      font-weight: 500;
+
+      display: block;
+      padding: 0.6rem 1.2rem;
+    }
+
+    &:not(:first-child):not(:last-child) .active {
+      background-color: @dark;
+      border-radius: 0.5rem;
+      color: #fff;
+
+      &:hover,
+      &:active,
+      &:focus-visible {
+        background-color: lighten(@dark, 10%);
+      }
+    }
+  }
+}
+
+.editor#project {
+  display: flex;
+  gap: 2rem;
+}
+
+.editor > header,
+.editor > section > h2.title,
+.editor > section > h3.title {
+  border-bottom: 0.2rem solid @border;
+  padding-bottom: 0.4rem;
+}
+
+.editor > header {
+  display: flex;
+  gap: 1rem;
+
+  margin-bottom: 1rem;
+}
+
+.editor > header > .title {
+  flex: 1 0;
+}
+
+.editor > header > .actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.editor#project .main {
+  flex: 1 0;
+  width: 0;
+}
+
+.editor > .metadata > *,
+.editor .main .metadata > *,
+.editor .sidebar .metadata > * {
+  @pad: 1rem;
+
+  &:not(:first-child) {
+    border-top: 0.2rem dashed @border;
+    padding-top: @pad;
+  }
+
+  &:not(:last-child) {
+    padding-bottom: @pad;
+  }
+
+  b {
+    display: block;
+  }
+}
+
+.editor#project .import {
+  border-bottom: 0.2rem dashed @border;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.editor#project .title {
+  &:empty::before {
+    content: attr(placeholder);
+    color: lighten(@gray, 20%);
+  }
+}
+
+.editor > section + section {
+  margin-top: 2rem;
+}
+
+.editor .markdownEditor {
+  line-height: 2.4rem;
+  margin: 1rem 0 2rem;
+}
+
+.editor .markdownEditor .CodeMirror {
+  border: 0;
+  color: inherit;
+  padding: 0;
+}
+
+.editor .markdownEditor .CodeMirror-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.editor .markdownEditor .presentation,
+.editor .markdownEditor .CodeMirror-line,
+.editor .markdownEditor .CodeMirror-lines,
+.editor .markdownEditor .CodeMirror-line-like,
+.editor .markdownEditor .editor-preview-full,
+.editor .markdownEditor .CodeMirror-line > span {
+  padding: 0 !important;
+}
+
+.editor .markdownEditor .CodeMirror-line span[cm-text] {
+  display: block;
+  height: 1rem;
+}
+
+.editor .queues .upload {
+  border: 0.4rem dashed @border;
+  border-radius: 0.5rem;
+
+  font-size: 1.8rem;
+  font-weight: 500;
+  line-height: 2.2rem;
+  text-align: center;
+
+  width: 100%;
+  padding: 4rem;
+  margin-top: 1rem;
+
+  > * {
+    display: block;
+  }
+}
+
+.editor .queues .upload .uploading {
+  margin-top: 2rem;
+}
+
+.editor .queues .entries {
+  border: 0.2rem solid @border;
+  border-radius: 0.5rem;
+
+  margin-top: 1rem;
+}
+
+.editor .queues .entry {
+  position: relative;
+  overflow: hidden;
+
+  height: 4rem;
+
+  &:not(:first-child) {
+    border-top: 0.2rem dashed @border;
+  }
+}
+
+.editor .queues .entry .progress {
+  transition: 0.25s ease-in-out width;
+  background: fade(@blue, 25%);
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+}
+
+.editor .queues .entry .wrapper {
+  position: relative;
+  align-items: center;
+  display: flex;
+  height: 100%;
+}
+
+.editor .queues .entry .metadata,
+.editor .queues .entry .delete {
+  padding: 0.8rem 1rem;
+}
+
+.editor .queues .entry .metadata {
+  flex: 1 0;
+  display: flex;
+  gap: 1rem;
+  width: 0;
+}
+
+.editor .queues .entry .fileName {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  flex: 1 0;
+  width: 0;
+}
+
+.editor .queues .entry .retry {
+  margin-right: 0.4rem;
+}
+
+.editor .queues .entry .failed {
+  color: @red;
+}
+
+.editor .pages h3 {
+  border-bottom: 0.2rem solid @border;
+}
+
+.editor .pages .entries {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.editor .pages .entry {
+  border-bottom: 0.2rem dashed @border;
+
+  align-items: flex-start;
+  display: flex;
+  gap: 1rem;
+
+  min-height: 11rem;
+  padding: 1rem;
+
+  &:last-child:nth-child(odd),
+  &:last-child:nth-child(even) {
+    border-bottom: 0;
+  }
+}
+
+.editor .pages .entry .thumbnail {
+  box-shadow: 0 0 1rem fade(#000, 25%);
+
+  img {
+    width: 6.4rem;
+    max-height: 9rem;
+    object-fit: cover;
+  }
+}
+
+.editor .pages .entry .metadata {
+  flex: 1 0;
+  width: 0;
+}
+
+.editor .pages .entry .fileName {
+  word-break: break-all;
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.editor .pages .entry .delete {
+  margin-top: 0.8rem;
+}
+
+.editor .sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  width: 35%;
+  max-width: 32rem;
+}
+
+.editor .sidebar .actions {
+  > * ~ * {
+    margin-top: 0.4rem;
+  }
+
+  > div {
+    display: flex;
+    gap: 0.4rem;
+
+    > a,
+    > button {
+      flex: 1 0 auto;
+    }
+  }
+
+  > a,
+  > button {
+    display: block;
+    width: 100%;
+  }
+}
+
+.editor .sidebar > .wrapper > .actions {
+  margin-bottom: 0.4rem;
+}
+
+.editor .sidebar #cover .actions {
+  margin-top: 0.4rem;
+}
+
+.editor .sidebar #cover .cover {
+  background-image: linear-gradient(180deg, @dark 50%, #000);
+  border-radius: 0.5rem;
+
+  position: relative;
+  overflow: hidden;
+
+  height: 0;
+  padding-top: calc(3 / 2 * 100%);
+
+  img {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.covers#modal .entries {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  @media (max-width: 425px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.covers#modal .entry {
+  transition: 0.25s ease-in-out box-shadow;
+  box-shadow: 0 0 1rem fade(#000, 25%);
+  background-image: linear-gradient(180deg, @dark 50%, #000);
+  border-radius: 0.5rem;
+
+  position: relative;
+  overflow: hidden;
+
+  height: 0;
+  padding-top: calc(3 / 2 * 100%);
+
+  &:hover,
+  &:active,
+  &:focus-visible {
+    box-shadow: 0 0 1.25rem fade(#000, 35%);
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    &:not(figure) {
+      z-index: 1;
+    }
+  }
+
+  img {
+    object-fit: cover;
+  }
+}
+
+.covers#modal .entry figure,
+.covers#modal .entry figure img,
+.covers#modal .entry .upload,
+.covers#modal .entry .progress {
+  width: 100%;
+  height: 100%;
+}
+
+.covers#modal .entry .upload,
+.covers#modal .entry .progress {
+  color: fade(white, 80%);
+}
+
+.covers#modal .entry .progress {
+  background-color: fade(@dark, 50%);
+
+  svg {
+    width: 12rem;
+    color: inherit;
+
+    circle {
+      transition: 0.25s ease-in-out stroke-dashoffset;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+  }
+}
+
+.covers#modal .entry .actions {
+  transition: 0.25s ease-in-out all;
+  display: flex;
+  width: 100%;
+
+  opacity: 0.85;
+
+  button {
+    color: #fff;
+    padding: 0.8rem 1rem;
+  }
+}
+
+.covers#modal .entry:not(:hover):not(:focus-within) .actions,
+.covers#modal .entry:not(:focus-within):not(:hover) .actions {
+  opacity: 0;
+}
+
+.covers#modal .entry .actions .delete {
+  background-color: @red;
+
+  &:hover,
+  &:active,
+  &:focus-visible {
+    background-color: darken(@red, 5%);
+  }
+}
+
+.covers#modal .entry .actions .set {
+  background-color: @dark;
+  flex: 1 0;
+
+  &:hover,
+  &:active,
+  &:focus-visible {
+    background-color: darken(@dark, 5%);
+  }
+}
+
+.editor .main .metadata > .loading,
+.covers#modal .modalContentWrapper > .loading {
+  height: 32rem;
+}
+
+.settings section {
+  h3 {
+    border-bottom: 0.2rem solid @border;
+
+    margin-bottom: 1rem;
+  }
+
+  ~ section {
+    margin-top: 2rem;
+  }
+
+  > div ~ div,
+  > form > div ~ div,
+  > form > button {
+    margin-top: 1rem;
+  }
+}
+
+.settings .inputContainer > strong,
+.settings .checkboxContainer > strong {
+  min-width: 16rem;
+}
+
+.settings .deleteAccount .alert {
+  border: 0.1rem solid @red;
+  border-radius: 0.5rem;
+  color: @red;
+
+  padding: 1.2rem;
+}
+
+@media (min-width: 1025px) {
+  .editor .pages .entry {
+    &:nth-child(3n + 1) {
+      padding-left: 0;
+    }
+
+    &:nth-child(3n) {
+      padding-right: 0;
+    }
+
+    &:nth-last-child(2):nth-child(3n + 2),
+    &:nth-last-child(2):nth-child(3n + 1),
+    &:nth-last-child(3):nth-child(3n + 1) {
+      border-bottom: 0;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .editor .import form label {
+    span {
+      display: none;
+    }
+
+    input {
+      padding-left: 0.85rem !important;
+    }
+  }
+
+  .editor .pages .entries {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .editor .pages .entry {
+    &:nth-child(odd) {
+      padding-left: 0;
+    }
+
+    &:nth-child(even) {
+      padding-right: 0;
+    }
+
+    &:nth-last-child(2):nth-child(odd) {
+      border-bottom: 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .editor {
+    flex-direction: column;
+  }
+
+  .editor#project .main {
+    order: 2;
+    width: initial;
+  }
+
+  .editor .main {
+    order: 2;
+    width: initial;
+  }
+
+  .editor .sidebar {
+    order: 1;
+    flex-direction: row;
+    width: initial;
+    max-width: initial;
+  }
+
+  .editor .sidebar > .wrapper {
+    width: 35%;
+    min-width: 16rem;
+    max-width: 32rem;
+  }
+
+  .editor .sidebar .metadata {
+    flex: 1 0;
+  }
+
+  .editor .pages .entries {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .editor .pages .entry {
+    padding-left: 0;
+    padding-right: 0;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+}
+
+@media (max-width: 680px) {
+  .editor .sidebar {
+    flex-direction: column;
+  }
+
+  .editor .sidebar > .wrapper {
+    width: initial;
+    min-width: initial;
+    max-width: initial;
+  }
+}
