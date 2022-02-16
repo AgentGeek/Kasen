@@ -1,0 +1,153 @@
+{{- define "home.html" -}}
+  <!DOCTYPE html>
+  <html lang="{{ language }}">
+    {{- template "head" . }}
+    <body>
+      <h1 hidden>{{ .title }}</h1>
+      {{- template "header" . }}
+      <main>
+        <section class="feed" id="projects">
+          <header>
+            <h2>
+              <a href="/projects">
+                <span>Latest Series</span>
+                <i data-feather="chevron-right" width="20" height="20" strokeWidth="3"></i>
+              </a>
+            </h2>
+            <a href="/rss/projects" title="Projects feed">
+              <i data-feather="rss" width="20" height="20" strokeWidth="3"></i>
+            </a>
+          </header>
+          {{- if .projects }}
+            <div class="entries grid gap25">
+              {{- range .projects }}
+                <article class="entry">
+                  <a href="/projects/{{ .ID }}/{{ .Slug }}" title="{{ .Title }}">
+                    <figure class="cover">
+                      {{- if .Cover }}
+                        {{- $cover := (.Cover.Path .) }}
+                        <picture>
+                          <source srcset="/{{ $cover }}/512.jpg" media="(max-width: 425px)" />
+                          <img
+                            alt="Cover art for {{ .Title }}"
+                            title="{{ .Title }}"
+                            src="/{{ $cover }}/320.jpg"
+                            loading="lazy"
+                          />
+                        </picture>
+                      {{- end }}
+                      {{- if .ProjectStatus }}
+                        <small class="projectStatus">{{ .ProjectStatus | titleCase }}</small>
+                      {{- end }}
+                    </figure>
+                    <div class="metadata">
+                      <h3 class="title">{{ .Title }}</h3>
+                      {{- if .Tags }}
+                        <span class="tags">
+                          {{- range $i, $v := .Tags -}}
+                            {{- if lt $i 6 -}}
+                              {{- if $i -}}{{ ", " }}{{- end -}}
+                              {{- .Name -}}
+                            {{- end -}}
+                          {{- end -}}
+                        </span>
+                      {{- end }}
+                    </div>
+                  </a>
+                </article>
+              {{- end }}
+            </div>
+          {{- else }}
+            <p class="empty">Not yet available</p>
+          {{- end }}
+        </section>
+        <section class="feed" id="chapters">
+          <header>
+            <h2>
+              <a href="/chapters">
+                <span>Latest Updates</span>
+                <i data-feather="chevron-right" width="20" height="20" strokeWidth="3"></i>
+              </a>
+            </h2>
+            <a href="/rss/chapters" title="Chapters feed">
+              <i data-feather="rss" width="20" height="20" strokeWidth="3"></i>
+            </a>
+          </header>
+          {{- if .chapters }}
+            <div class="entries">
+              {{- range .chapters }}
+                <article class="entry">
+                  {{- $thumbnail := .Thumbnail }}
+                  {{- $title := (formatChapter .) }}
+                  {{- if $thumbnail }}
+                    <div>
+                      <figure class="thumbnail">
+                        <a href="/chapters/{{ .ID }}">
+                          <img
+                            alt="Thumbnail for {{ $title }} - {{ .Project.Title }}"
+                            title="{{ .Project.Title }}"
+                            src="{{ $thumbnail }}/64.jpg"
+                            loading="lazy"
+                          />
+                        </a>
+                      </figure>
+                    </div>
+                  {{- end }}
+                  <div class="metadata">
+                    <div class="projectTitle">
+                      <a href="/projects/{{ .Project.ID }}/{{ .Project.Slug }}">
+                        <i data-feather="book" width="14" height="14" strokeWidth="3"></i
+                        ><span>{{ .Project.Title }}</span>
+                      </a>
+                    </div>
+                    <h3 class="title">
+                      <a href="/chapters/{{ .ID }}">{{ $title }}</a>
+                    </h3>
+                    <div class="metadata-line-1">
+                      {{- $createdAt := (moment .CreatedAt ) }}
+                      <span class="createdAt" title="Released {{ $createdAt }}">
+                        <i data-feather="clock" width="14" height="14" strokeWidth="3"></i><time>{{ $createdAt }}</time>
+                      </span>
+                      {{- if .ScanlationGroups }}
+                        <span class="groups" title="Scanlation Groups">
+                          <i data-feather="users" width="14" height="14" strokeWidth="3"></i>
+                          {{- $len := (dec (len .ScanlationGroups)) -}}
+                          {{- range $i, $v := .ScanlationGroups -}}
+                            {{- if $i -}}
+                              {{- if eq $i $len -}}{{- " & " -}}{{- else -}},{{- end -}}
+                            {{- end -}}
+                            <a href="/chapters?scanlation_group={{ .Slug }}">{{ .Name }}</a>
+                          {{- end -}}
+                        </span>
+                      {{- else }}
+                        <span class="uploader" title="Uploader">
+                          <i data-feather="user" width="14" height="14" strokeWidth="3"></i
+                          ><a href="/chapters?uploader={{ .Uploader }}">{{ .Uploader.Name }}</a>
+                        </span>
+                      {{- end }}
+                    </div>
+                    {{- if .Project.Tags }}
+                      <div class="metadata-line-2">
+                        <span class="tags">
+                          {{- range $i, $v := .Project.Tags -}}
+                            {{- if lt $i 6 -}}
+                              {{- if $i -}}{{ ", " }}{{- end -}}
+                              {{- .Name -}}
+                            {{- end -}}
+                          {{- end -}}
+                        </span>
+                      </div>
+                    {{- end }}
+                  </div>
+                </article>
+              {{- end }}
+            </div>
+          {{- else }}
+            <p class="empty">Not yet available</p>
+          {{- end }}
+        </section>
+      </main>
+      {{- template "footer" . }}
+    </body>
+  </html>
+{{- end }}

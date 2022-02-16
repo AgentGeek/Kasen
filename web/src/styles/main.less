@@ -1,0 +1,614 @@
+@import "variables";
+
+body > section,
+body > main > section {
+  > header {
+    border-bottom: 0.2rem solid @border;
+
+    display: flex;
+    padding-bottom: 0.4rem;
+
+    h2 {
+      flex: 1 0;
+      width: 0;
+
+      svg {
+        margin-left: 0 !important;
+      }
+    }
+  }
+
+  ~ section {
+    margin-top: 2rem;
+  }
+}
+
+#auth {
+  text-align: center;
+  max-width: 32rem;
+  margin: auto;
+
+  h1 {
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+
+  .error {
+    background-color: @red;
+    border-radius: 0.5rem;
+    color: #fff;
+
+    padding: 0.4rem 0.6rem;
+    margin: 1rem 0;
+  }
+
+  form {
+    > * {
+      display: block;
+
+      ~ * {
+        margin: auto;
+        margin-top: 1rem;
+      }
+    }
+
+    div {
+      display: flex;
+      gap: 1rem;
+    }
+
+    input {
+      background-color: @light;
+      border: 0.25rem solid transparent;
+      border-radius: 0.5rem;
+
+      width: 100%;
+      padding: 0.35rem 0.85rem;
+
+      &:hover,
+      &:active,
+      &:focus-visible {
+        background-color: darken(@light, 2.5%);
+      }
+
+      &:focus-visible {
+        border-color: @border;
+      }
+    }
+
+    button {
+      background-color: @dark;
+      border-radius: 0.5rem;
+      font-weight: 500;
+      color: #fff;
+
+      padding: 0.6rem 1.2rem;
+
+      &:hover,
+      &:active,
+      &:focus-visible {
+        background-color: lighten(@dark, 10%);
+      }
+    }
+  }
+}
+
+.toggle {
+  border: 0 solid @border;
+  border-width: 0.2rem 0;
+
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.8rem;
+
+  text-transform: uppercase;
+  text-align: center;
+  letter-spacing: 0.035rem;
+
+  cursor: pointer;
+
+  display: block;
+  width: 100%;
+
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+
+  &:hover,
+  &:focus-visible {
+    background-color: @light;
+  }
+
+  > strong {
+    flex: 1 0;
+    width: 0;
+  }
+}
+
+#state {
+  display: none;
+}
+
+.search {
+  margin-bottom: 1rem;
+}
+
+.search .filters {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+
+  margin: 1rem 0;
+
+  input {
+    display: none;
+  }
+
+  > div {
+    > strong {
+      border-bottom: 0.2rem solid @border;
+      font-weight: 600;
+
+      display: block;
+    }
+
+    > div {
+      strong {
+        margin-top: 0.4rem;
+        padding: 0.4rem 0.8rem;
+      }
+
+      input:checked + strong {
+        background-color: @dark;
+        color: #fff;
+
+        &:hover,
+        &:active,
+        &:focus-visible {
+          background-color: lighten(@dark, 6%);
+        }
+
+        &:active {
+          box-shadow: inset 0 0 0 0.25rem darken(@dark, 2.5%);
+        }
+      }
+    }
+  }
+}
+
+#state:not(:checked) + .search {
+  display: none;
+}
+
+.feed .empty,
+.view#project .chapters .empty {
+  padding: 1rem 0;
+}
+
+.feed#projects .entries {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  margin-top: 2rem;
+
+  @media (max-width: 1220px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @media (max-width: 820px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (max-width: 620px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 420px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.feed#projects .entry .cover {
+  transition: 0.25s ease-in-out box-shadow;
+  box-shadow: 0 0 1rem fade(#000, 25%);
+  background-image: linear-gradient(180deg, rgb(26, 26, 26), #000);
+  border-radius: 0.5rem;
+  overflow: hidden;
+
+  position: relative;
+  height: 0;
+  padding-top: calc(3 / 2 * 100%);
+
+  img {
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+}
+
+.feed#projects .entry:hover .cover,
+.feed#projects .entry:focus-within .cover {
+  box-shadow: 0 0 1.25rem fade(#000, 35%);
+}
+
+.feed#projects .entry .cover .projectStatus {
+  transition: 0.25s ease-in-out background-color;
+  background: fade(#000, 75%);
+  border-radius: 0.5rem;
+
+  font-weight: 500;
+  color: #fff;
+
+  position: absolute;
+  top: 0;
+
+  padding: 0.4rem 0.8rem;
+  margin: 1rem;
+}
+
+.feed#projects .entry:hover .projectStatus,
+.feed#projects .entry:focus-within .projectStatus {
+  background: fade(#000, 85%);
+}
+
+.feed#projects .entry .metadata {
+  color: @text;
+  margin-top: 1rem;
+}
+
+.feed#projects .entry .title,
+.feed#chapters .entry .title,
+.view#project .chapters .entry .title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  font-size: 1.6rem;
+  line-height: 2rem;
+  color: @text;
+
+  &:not(:last-child) {
+    margin-bottom: 0.2rem;
+  }
+}
+
+.feed#projects .entry .title {
+  transition: 0.25s ease-in-out color;
+}
+
+.feed#projects .entry:hover .title,
+.feed#projects .entry:focus-within .title {
+  color: @blue;
+}
+
+.feed#projects .entry .tags {
+  font-size: 1.4rem;
+  line-height: 1.8rem;
+  font-weight: 500;
+  color: @gray;
+
+  display: block;
+}
+
+.feed#chapters .entries {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+.feed#chapters .entry {
+  border-bottom: 0.2rem dashed @border;
+
+  align-items: flex-start;
+  display: flex;
+  gap: 1.5rem;
+
+  padding: 1rem;
+
+  &:last-child:nth-child(odd),
+  &:last-child:nth-child(even) {
+    border-bottom: 0;
+  }
+
+  @media (min-width: 1025px) {
+    &:nth-child(3n + 1) {
+      padding-left: 0;
+    }
+
+    &:nth-child(3n) {
+      padding-right: 0;
+    }
+
+    &:nth-last-child(2):nth-child(3n + 2),
+    &:nth-last-child(2):nth-child(3n + 1),
+    &:nth-last-child(3):nth-child(3n + 1) {
+      border-bottom: 0;
+    }
+  }
+
+  @media (min-width: 769px) and (max-width: 1024px) {
+    &:nth-child(odd) {
+      padding-left: 0;
+    }
+
+    &:nth-child(even) {
+      padding-right: 0;
+    }
+
+    &:nth-last-child(2):nth-child(odd) {
+      border-bottom: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding-left: 0;
+    padding-right: 0;
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+}
+
+.feed#chapters .entry .thumbnail {
+  box-shadow: 0 0 1rem fade(#000, 25%);
+
+  img {
+    width: 6.4rem;
+    max-height: 9rem;
+    object-fit: cover;
+  }
+}
+
+.feed#chapters .entry .metadata {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: @gray;
+
+  flex: 1 0;
+  width: 0;
+}
+
+.feed#chapters .entry .projectTitle {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  display: block;
+}
+
+.feed#chapters .entry .tags {
+  white-space: initial;
+}
+
+.entry .metadata-line-group {
+  display: flex;
+  gap: 1rem;
+}
+
+.entry .metadata-line-group .metadata-line-left,
+.entry .metadata-line-group .metadata-line-right {
+  flex: 1 0;
+  width: 0;
+}
+
+.entry .metadata-line-group .metadata-line-right {
+  text-align: right;
+}
+
+.entry div[class^="metadata-line"] > span,
+.entry div[class^="metadata-line"] > a {
+  white-space: nowrap;
+  display: inline-block;
+
+  &:not(:last-child) {
+    margin-right: 0.4rem;
+  }
+}
+
+.entry .metadata-line-group .metadata-line-right > span,
+.entry .metadata-line-group .metadata-line-right > a {
+  margin-right: 0;
+
+  &:not(:first-child) {
+    margin-left: 0.4rem;
+  }
+}
+
+.view#project {
+  display: flex;
+  gap: 2rem;
+}
+
+.view#project .main {
+  flex: 1 0;
+}
+
+.view#project .main .description {
+  line-height: 2.4rem;
+  margin: 1rem 0 1.8rem;
+
+  > * ~ * {
+    margin-top: 1rem;
+  }
+
+  p > a {
+    font-weight: 600;
+  }
+
+  ul,
+  ol {
+    margin-left: 2.8rem;
+  }
+
+  ul ul,
+  ul ol,
+  ol ul,
+  ol ol {
+    margin-left: 1.2rem;
+  }
+
+  ul {
+    list-style: circle;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+}
+
+.view#project .main > h2 {
+  margin: 1rem 0;
+}
+
+.view#project .sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  width: 35%;
+  max-width: 32rem;
+}
+
+.view#project .sidebar .cover {
+  background-image: linear-gradient(180deg, @dark 50%, #000);
+  border-radius: 0.5rem;
+
+  position: relative;
+  overflow: hidden;
+
+  height: 0;
+  padding-top: calc(3 / 2 * 100%);
+
+  img {
+    position: absolute;
+    top: 0;
+  }
+}
+
+.view#project .sidebar .metadata > * {
+  @pad: 1rem;
+
+  &:not(:first-child) {
+    border-top: 0.2rem dashed @border;
+    padding-top: @pad;
+  }
+
+  &:not(:last-child) {
+    padding-bottom: @pad;
+  }
+
+  b {
+    display: block;
+  }
+}
+
+.view#project .chapters h2 {
+  border-bottom: 0.2rem solid @border;
+  padding-bottom: 0.4rem;
+}
+
+.view#project .chapters .entry {
+  display: flex;
+  gap: 1rem;
+
+  padding: 1rem 0;
+
+  &:not(:first-child) {
+    border-top: 0.2rem dashed @border;
+  }
+}
+
+.view#project .chapters .entry .metadata {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: @gray;
+
+  flex: 1 0;
+  width: 0;
+}
+
+.pagination ul {
+  text-align: center;
+  margin-top: 2rem;
+
+  li {
+    vertical-align: top;
+    display: inline-block;
+
+    a {
+      font-weight: 500;
+
+      display: block;
+      padding: 0.6rem 1.2rem;
+    }
+
+    &:not(:first-child):not(:last-child) .active {
+      background-color: @dark;
+      border-radius: 0.5rem;
+      color: #fff;
+
+      &:hover,
+      &:active,
+      &:focus-visible {
+        background-color: lighten(@dark, 10%);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .search .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .view#project {
+    flex-direction: column;
+  }
+
+  .view#project .main {
+    order: 2;
+  }
+
+  .view#project .sidebar {
+    order: 1;
+    flex-direction: row;
+    width: initial;
+    max-width: initial;
+  }
+
+  .view#project .sidebar > .wrapper {
+    width: 35%;
+    min-width: 16rem;
+    max-width: 32rem;
+  }
+
+  .view#project .sidebar .metadata {
+    flex: 1 0;
+    width: 0;
+  }
+}
+
+@media (max-width: 425px) {
+  .view#project .sidebar {
+    flex-direction: column;
+  }
+
+  .view#project .sidebar > .wrapper {
+    width: initial;
+    min-width: initial;
+    max-width: initial;
+  }
+
+  .entry .metadata-line-group .metadata-line-right > * {
+    display: block;
+    margin-left: 0;
+  }
+}

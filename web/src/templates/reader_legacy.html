@@ -1,0 +1,83 @@
+{{- define "reader_legacy.html" -}}
+  <!DOCTYPE html>
+  <html lang="{{ language }}">
+    {{- template "reader_head" . }}
+    <body class="reader" id="legacy">
+      {{- $project := .chapter.Project }}
+      <input type="checkbox" id="state" />
+      <aside>
+        <header>
+          <h1 class="title">
+            <a href="/projects/{{ $project.ID }}/{{ $project.Slug }}" title="{{ $project.Title }}">
+              <span>{{ $project.Title }}</span>
+            </a>
+          </h1>
+          <nav aria-label="Chapter">
+            <ul>
+              <li {{ if not .pagination.Previous }}class="disabled"{{ end }}>
+                {{- if .pagination.Previous }}
+                  <a href="/chapters/{{ .pagination.Previous.ID }}">Previous</a>
+                {{- else }}
+                  <span>Previous</span>
+                {{- end }}
+
+              </li>
+              <li {{ if not .pagination.Next }}class="disabled"{{ end }}>
+                {{- if .pagination.Next }}
+                  <a href="/chapters/{{ .pagination.Next.ID }}">Next</a>
+                {{- else }}
+                  <span>Next</span>
+                {{- end }}
+              </li>
+            </ul>
+          </nav>
+        </header>
+        <div class="body">
+          <nav class="chapters" aria-label="Chapters">
+            <ul>
+              {{- $current := .chapter }}
+              {{- range .chapters }}
+                {{- $isActive:= (eq $current.ID .ID) }}
+                <li {{ if $isActive }}class="active"{{ end }}>
+                  <a href="/chapters/{{ .ID }}">
+                    {{ formatChapter . }}
+                  </a>
+                </li>
+              {{- end }}
+            </ul>
+          </nav>
+        </div>
+      </aside>
+      <main>
+        <div class="top">
+          <label for="state">
+            <span class="toggle"></span>
+          </label>
+          <a class="switchReader" href="?legacy=false"><strong>Switch reader</strong></a>
+        </div>
+        <section class="pages">
+          {{- $chapter := .chapter }}
+          {{- $totalPages := (len .chapter.Pages) }}
+          {{- range $i, $v := .chapter.Pages }}
+            {{- $pageNum := (inc $i) }}
+            <div class="page" id="{{ $pageNum }}">
+              {{- if $i }}
+                <a class="previous" href="#{{ $i }}" title="Previous page">Previous Page</a>
+              {{- end }}
+              {{- if lt $pageNum $totalPages }}
+                <a class="next" href="#{{ inc $pageNum }}" title="Next page">Next page</a>
+              {{- end }}
+              <img src="/pages/{{ $chapter.ID }}/{{ . }}" alt="Page {{ $pageNum }}" loading="lazy" />
+            </div>
+          {{- end }}
+        </section>
+        {{- if .pagination.Next }}
+          <footer>
+            <a class="next" href="/chapters/{{ .pagination.Next.ID }}">Next Chapter</a>
+          </footer>
+        {{- end }}
+
+      </main>
+    </body>
+  </html>
+{{- end }}

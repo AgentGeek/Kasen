@@ -1,0 +1,123 @@
+{{- define "chapters.html" -}}
+  <!DOCTYPE html>
+  <html lang="{{ language }}">
+    {{- template "head" . }}
+    <body>
+      <h1 hidden>{{ .title }}</h1>
+      {{- template "header" . }}
+      <main>
+        <section class="feed" id="chapters">
+          <header>
+            {{- if .hasQueries }}
+              <h2>Search Chapters ({{ .total }})</h2>
+            {{- else }}
+              <h2>Browse Chapters ({{ .total }})</h2>
+            {{- end }}
+          </header>
+          {{- if .chapters }}
+            <div class="entries">
+              {{- range .chapters }}
+                <article class="entry">
+                  {{- $thumbnail := .Thumbnail }}
+                  {{- $title := (formatChapter .) }}
+                  {{- if $thumbnail }}
+                    <figure class="thumbnail">
+                      <a href="/chapters/{{ .ID }}">
+                        <img
+                          alt="Thumbnail for {{ $title }} - {{ .Project.Title }}"
+                          title="{{ .Project.Title }}"
+                          src="{{ $thumbnail }}/64.jpg"
+                          loading="lazy"
+                        />
+                      </a>
+                    </figure>
+                  {{- end }}
+                  <div class="metadata">
+                    <div class="projectTitle">
+                      <a href="/projects/{{ .Project.ID }}/{{ .Project.Slug }}">
+                        <i data-feather="book" width="14" height="14" strokeWidth="3"></i
+                        ><span>{{ .Project.Title }}</span>
+                      </a>
+                    </div>
+                    <h3 class="title">
+                      <a href="/chapters/{{ .ID }}">{{ $title }}</a>
+                    </h3>
+                    <div class="metadata-line-1">
+                      {{- $createdAt := (moment .CreatedAt ) }}
+                      <span class="createdAt" title="Released {{ $createdAt }}">
+                        <i data-feather="clock" width="14" height="14" strokeWidth="3"></i><time>{{ $createdAt }}</time>
+                      </span>
+                      {{- if .ScanlationGroups }}
+                        <span class="groups" title="Scanlation Groups">
+                          <i data-feather="users" width="14" height="14" strokeWidth="3"></i>
+                          {{- $len := (dec (len .ScanlationGroups)) -}}
+                          {{- range $i, $v := .ScanlationGroups -}}
+                            {{- if $i -}}
+                              {{- if eq $i $len -}}{{- " & " -}}{{- else -}},{{- end -}}
+                            {{- end -}}
+                            <a href="/chapters?scanlation_group={{ .Slug }}">{{ .Name }}</a>
+                          {{- end -}}
+                        </span>
+                      {{- else }}
+                        <span class="uploader" title="Uploader">
+                          <i data-feather="user" width="14" height="14" strokeWidth="3"></i
+                          ><a href="/chapters?uploader={{ .Uploader }}">{{ .Uploader.Name }}</a>
+                        </span>
+                      {{- end }}
+                    </div>
+                    {{- if .Project.Tags }}
+                      <div class="metadata-line-2">
+                        <span class="tags">
+                          {{- range $i, $v := .Project.Tags -}}
+                            {{- if lt $i 6 -}}
+                              {{- if $i -}}{{ ", " }}{{- end -}}
+                              {{- .Name -}}
+                            {{- end -}}
+                          {{- end -}}
+                        </span>
+                      </div>
+                    {{- end }}
+                  </div>
+                </article>
+              {{- end }}
+            </div>
+            {{- if gt .pagination.TotalPages 1 }}
+              <nav class="pagination" aria-label="Page">
+                <ul>
+                  <li class="first">
+                    <a href="/chapters" title="First page">
+                      <i data-feather="chevrons-left" width="20" height="20" strokeWidth="3"></i>
+                    </a>
+                  </li>
+                  {{- $currentPage := .pagination.CurrentPage }}
+                  {{- range .pagination.Pages }}
+                    <li>
+                      <a {{ if eq $currentPage . }}class="active"{{ end }} href="?page={{ . }}">
+                        <strong>{{ . }}</strong>
+                      </a>
+                    </li>
+                  {{- end }}
+                  <li class="last">
+                    <a href="?page={{ .pagination.TotalPages }}" title="Last page">
+                      <i data-feather="chevrons-right" width="20" height="20" strokeWidth="3"></i>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+            {{- end }}
+          {{- else }}
+            <div class="empty">
+              {{- if .hasQueries }}
+                <h3>No results found</h3>
+                <p>There are no results that match your search.</p>
+              {{- else }}
+                <p>Not yet available</p>
+              {{- end }}
+            </div>
+          {{- end }}
+        </section>
+      </main>
+      {{- template "footer" . }}
+    </body>
+  </html>
+{{- end }}

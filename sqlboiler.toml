@@ -1,0 +1,40 @@
+output              = "models"
+pkgname             = "models"
+wipe                = true
+no-context          = true
+no-tests            = true
+no-rows-affected    = true
+
+[psql]
+dbname  = "kasen"
+schema  = "public"
+host    = "localhost"
+port    = 5432
+user    = "kasen"
+pass    = "kasen"
+sslmode = "disable"
+
+[aliases.tables.user_account]
+name = "user"
+up_plural = "Users"
+up_singular = "User"
+down_plural = "users"
+down_singuar = "user"
+
+[aliases.tables.project_artists.relationships.project_artists_project_id_fkey]
+local   = "Artists"
+foreign = "ArtistProjects"
+
+
+[aliases.tables.project_authors.relationships.project_authors_project_id_fkey]
+local   = "Authors"
+foreign = "AuthorProjects"
+
+
+[aliases.tables.project_tags.relationships.project_tags_tag_id_fkey]
+local   = "Projects"
+foreign = "Tags"
+
+[aliases.tables.chapter.relationships.chapter_uploader_id_fkey]
+local   = "Chapters"
+foreign = "Uploader"

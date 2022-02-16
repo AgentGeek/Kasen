@@ -1,0 +1,21 @@
+[Unit]
+Description=Kasen (CMS for scanlators)
+After=syslog.target
+After=network.target
+Wants=postgresql.service
+After=postgresql.service
+Wants=redis.service
+After=redis.service
+
+[Service]
+RestartSec=2s
+Type=simple
+User=kasen
+Group=kasen
+WorkingDirectory=/var/lib/kasen/
+ExecStart=/usr/local/bin/kasen -config=/etc/kasen/config.ini
+Restart=always
+Environment=USER=kasen HOME=/home/kasen
+
+[Install]
+WantedBy=multi-user.target

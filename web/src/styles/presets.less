@@ -1,0 +1,937 @@
+@import "variables";
+body {
+  .colorLink {
+    color: @blue;
+  }
+
+  .colorSuccess {
+    color: @green;
+  }
+
+  .colorWarn {
+    color: @red;
+  }
+
+  .colorSupress {
+    color: @gray;
+  }
+
+  .bold {
+    font-weight: 600;
+  }
+
+  .strong {
+    font-weight: 500;
+  }
+
+  .posRel {
+    position: relative;
+  }
+
+  .posAbs {
+    position: absolute;
+  }
+
+  .posFix {
+    position: fixed;
+  }
+
+  .posSticky {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+
+  .top {
+    top: 0;
+  }
+
+  .left {
+    left: 0;
+  }
+
+  .right {
+    right: 0;
+  }
+
+  .bottom {
+    bottom: 0;
+  }
+
+  .stretch {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .bt0 {
+    border-top: 0;
+  }
+
+  .bt1 {
+    border-top: 0.1rem solid @border;
+  }
+
+  .bt2 {
+    border-top: 0.2rem solid @border;
+  }
+
+  .bt2h {
+    border-top: 0.25rem solid @border;
+  }
+
+  .bt4 {
+    border-top: 0.4rem solid @border;
+  }
+
+  .bb0 {
+    border-bottom: 0;
+  }
+
+  .bb1 {
+    border-bottom: 0.1rem solid @border;
+  }
+
+  .bb2 {
+    border-bottom: 0.2rem solid @border;
+  }
+
+  .bb2h {
+    border-bottom: 0.25rem solid @border;
+  }
+
+  .bb4 {
+    border-bottom: 0.4rem solid @border;
+  }
+
+  .by0 {
+    border-top-width: 0;
+    border-bottom-width: 0;
+  }
+
+  .by1 {
+    border: 0 solid @border;
+    border-top-width: 0.1rem;
+    border-bottom-width: 0.1rem;
+  }
+
+  .by2 {
+    border: 0 solid @border;
+    border-top-width: 0.2rem;
+    border-bottom-width: 0.2rem;
+  }
+
+  .by2h {
+    border: 0 solid @border;
+    border-top-width: 0.25rem;
+    border-bottom-width: 0.25rem;
+  }
+
+  .by4 {
+    border: 0 solid @border;
+    border-top-width: 0.4rem;
+    border-bottom-width: 0.4rem;
+  }
+
+  .bv0 {
+    border-left-width: 0;
+    border-right-width: 0;
+  }
+
+  .bv1 {
+    border: 0 solid @border;
+    border-left-width: 0.1rem;
+    border-right-width: 0.1rem;
+  }
+
+  .bv2 {
+    border: 0 solid @border;
+    border-left-width: 0.2rem;
+    border-right-width: 0.2rem;
+  }
+
+  .bv2h {
+    border: 0 solid @border;
+    border-left-width: 0.25rem;
+    border-right-width: 0.25rem;
+  }
+
+  .bv4 {
+    border: 0 solid @border;
+    border-left-width: 0.4rem;
+    border-right-width: 0.4rem;
+  }
+
+  .bl0 {
+    border-left-width: 0;
+  }
+
+  .br0 {
+    border-right-width: 0;
+  }
+
+  .b0 {
+    border: 0;
+  }
+
+  .b2 {
+    border: 0.2rem solid @border;
+  }
+
+  .b2h {
+    border: 0.25rem solid @border;
+  }
+
+  .b4 {
+    border: 0.4rem solid @border;
+  }
+
+  .radius4 {
+    border-radius: 0.5rem;
+  }
+
+  .radius5 {
+    border-radius: 0.5rem;
+  }
+
+  .radius6 {
+    border-radius: 0.6rem;
+  }
+
+  .dashed {
+    border-style: dashed;
+  }
+
+  .alignLeft {
+    text-align: left;
+  }
+
+  .alignRight {
+    text-align: right;
+  }
+
+  .alignCenter {
+    text-align: center;
+  }
+
+  .uppercase {
+    text-transform: uppercase;
+  }
+
+  .lowercase {
+    text-transform: lowercase;
+  }
+
+  .capitalize {
+    text-transform: capitalize;
+  }
+
+  .zeroWidth {
+    width: 0;
+  }
+
+  .fullWidth {
+    width: 100%;
+  }
+
+  .zeroHeight {
+    height: 0;
+  }
+
+  .fullHeight {
+    height: 100%;
+  }
+
+  .flex {
+    display: flex;
+
+    &.fCol {
+      flex-direction: column;
+    }
+
+    &.fStart {
+      align-items: flex-start;
+    }
+
+    &.fEnd {
+      align-items: flex-end;
+    }
+
+    &.fCenter {
+      align-items: center;
+      justify-content: center;
+    }
+
+    &.fRight {
+      align-items: right;
+      justify-content: right;
+    }
+
+    > .fFill {
+      flex: 1 0;
+    }
+
+    > .fFillAuto {
+      flex: 1 0 auto;
+    }
+  }
+
+  .grid {
+    display: grid;
+
+    .gCols1 {
+      grid-template: repeat(1, 1fr);
+    }
+
+    .gCols2 {
+      grid-template-columns: repeat(1, 2fr);
+    }
+
+    .gCols3 {
+      grid-template-columns: repeat(1, 3fr);
+    }
+
+    .gCols4 {
+      grid-template-columns: repeat(1, 4fr);
+    }
+
+    .gCols5 {
+      grid-template-columns: repeat(1, 5fr);
+    }
+
+    .gCols6 {
+      grid-template-columns: repeat(1, 6fr);
+    }
+  }
+
+  .flex,
+  .grid {
+    &.gap4 {
+      gap: 0.4rem;
+    }
+
+    &.gap8 {
+      gap: 0.8rem;
+    }
+
+    &.gap10 {
+      gap: 1rem;
+    }
+
+    &.gap12 {
+      gap: 1.2rem;
+    }
+
+    &.gap16 {
+      gap: 1.6rem;
+    }
+
+    &.gap20 {
+      gap: 2rem;
+    }
+
+    &.gap25 {
+      gap: 2.5rem;
+    }
+
+    &.gap30 {
+      gap: 3rem;
+    }
+
+    &.gap40 {
+      gap: 4rem;
+    }
+  }
+
+  .block {
+    display: block;
+  }
+
+  .inlineBlock {
+    display: inline-block;
+  }
+
+  .fleft {
+    float: left;
+  }
+
+  .fright {
+    float: right;
+  }
+
+  .mAuto {
+    margin: auto;
+  }
+
+  .fm0:first-child {
+    margin: 0;
+  }
+
+  .m4 {
+    margin: 0.4rem;
+  }
+
+  .m8 {
+    margin: 0.8rem;
+  }
+
+  .m10 {
+    margin: 1rem;
+  }
+
+  .m12 {
+    margin: 1.2rem;
+  }
+
+  .m16 {
+    margin: 1.6rem;
+  }
+
+  .m20 {
+    margin: 2rem;
+  }
+
+  .m25 {
+    margin: 2.5rem;
+  }
+
+  .m30 {
+    margin: 3rem;
+  }
+
+  .m40 {
+    margin: 4rem;
+  }
+
+  .fmt0:first-child {
+    margin-top: 0;
+  }
+
+  .mt0 {
+    margin-top: 0;
+  }
+
+  .mt4 {
+    margin-top: 0.4rem;
+  }
+
+  .mt8 {
+    margin-top: 0.8rem;
+  }
+
+  .mt10 {
+    margin-top: 1rem;
+  }
+
+  .mt12 {
+    margin-top: 1.2rem;
+  }
+
+  .mt16 {
+    margin-top: 1.6rem;
+  }
+
+  .mt20 {
+    margin-top: 2rem;
+  }
+
+  .mt25 {
+    margin-top: 2.5rem;
+  }
+
+  .mt30 {
+    margin-top: 3rem;
+  }
+
+  .mt40 {
+    margin-top: 4rem;
+  }
+
+  .fmb0:first-child {
+    margin-bottom: 0;
+  }
+
+  .mb0 {
+    margin-bottom: 0;
+  }
+
+  .mb4 {
+    margin-bottom: 0.4rem;
+  }
+
+  .mb8 {
+    margin-bottom: 0.8rem;
+  }
+
+  .mb10 {
+    margin-bottom: 1rem;
+  }
+
+  .mb12 {
+    margin-bottom: 1.2rem;
+  }
+
+  .mb16 {
+    margin-bottom: 1.6rem;
+  }
+
+  .mb20 {
+    margin-bottom: 2rem;
+  }
+
+  .mb25 {
+    margin-bottom: 2.5rem;
+  }
+
+  .mb30 {
+    margin-bottom: 3rem;
+  }
+
+  .mb40 {
+    margin-bottom: 4rem;
+  }
+
+  .fp0:first-child {
+    padding: 0;
+  }
+
+  .p4 {
+    padding: 0.4rem;
+  }
+
+  .p8 {
+    padding: 0.8rem;
+  }
+
+  .p10 {
+    padding: 1rem;
+  }
+
+  .p12 {
+    padding: 1.2rem;
+  }
+
+  .p16 {
+    padding: 1.6rem;
+  }
+
+  .p20 {
+    padding: 2rem;
+  }
+
+  .p25 {
+    padding: 2.5rem;
+  }
+
+  .p30 {
+    padding: 3rem;
+  }
+
+  .p40 {
+    padding: 4rem;
+  }
+
+  .fpx0:first-child {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .px4 {
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+  }
+
+  .px6 {
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+  }
+
+  .px8 {
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+  }
+
+  .px10 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .fpy0:first-child {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .py4 {
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+  }
+
+  .py6 {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+
+  .py8 {
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
+
+  .py10 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .fpt0:first-child {
+    padding-top: 0;
+  }
+
+  .pt0 {
+    padding-top: 0;
+  }
+
+  .pt4 {
+    padding-top: 0.4rem;
+  }
+
+  .pt8 {
+    padding-top: 0.8rem;
+  }
+
+  .pt10 {
+    padding-top: 1rem;
+  }
+
+  .pt12 {
+    padding-top: 1.2rem;
+  }
+
+  .pt16 {
+    padding-top: 1.6rem;
+  }
+
+  .pt20 {
+    padding-top: 2rem;
+  }
+
+  .pt25 {
+    padding-top: 2.5rem;
+  }
+
+  .pt30 {
+    padding-top: 3rem;
+  }
+
+  .pt40 {
+    padding-top: 4rem;
+  }
+
+  .fpb0:first-child {
+    padding-bottom: 0;
+  }
+
+  .pb0 {
+    padding-bottom: 0;
+  }
+
+  .pb4 {
+    padding-bottom: 0.4rem;
+  }
+
+  .pb8 {
+    padding-bottom: 0.8rem;
+  }
+
+  .pb10 {
+    padding-bottom: 1rem;
+  }
+
+  .pb12 {
+    padding-bottom: 1.2rem;
+  }
+
+  .pb16 {
+    padding-bottom: 1.6rem;
+  }
+
+  .pb20 {
+    padding-bottom: 2rem;
+  }
+
+  .pb25 {
+    padding-bottom: 2.5rem;
+  }
+
+  .pb30 {
+    padding-bottom: 3rem;
+  }
+
+  .pb40 {
+    padding-bottom: 4rem;
+  }
+
+  .fpl0:first-child {
+    padding-left: 0;
+  }
+
+  .pl0 {
+    padding-left: 0;
+  }
+
+  .fpr0:first-child {
+    padding-right: 0;
+  }
+
+  .pr0 {
+    padding-right: 0;
+  }
+
+  .i0 {
+    z-index: 0;
+  }
+
+  .i1 {
+    z-index: 1;
+  }
+
+  .i10 {
+    z-index: 10;
+  }
+
+  .i100 {
+    z-index: 100;
+  }
+
+  .i1000 {
+    z-index: 1000;
+  }
+
+  .cursorPointer {
+    cursor: pointer;
+  }
+
+  .cursorNone {
+    cursor: none;
+  }
+
+  .formContainer,
+  .inputContainer,
+  .checkboxContainer {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+
+    > strong {
+      min-width: 8rem;
+    }
+
+    > form,
+    > input {
+      position: relative;
+      overflow: hidden;
+    }
+  }
+
+  .formContainer,
+  .inputContainer {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+
+    > form,
+    > input {
+      flex: 1 0;
+      width: 0;
+    }
+  }
+
+  .form {
+    background-color: @light;
+    border: 0.25rem solid transparent;
+    border-radius: 0.5rem;
+
+    display: flex;
+
+    &:hover,
+    &:active,
+    &:focus-within {
+      background-color: darken(@light, 2.5%);
+    }
+
+    &:focus-within {
+      border-color: @border;
+    }
+
+    > *:not(label),
+    > label > * {
+      padding: 0.35rem 0.85rem;
+    }
+
+    > span:first-child,
+    > label > span:first-child {
+      padding-right: 0;
+
+      + input {
+        padding-left: 0;
+      }
+    }
+
+    > label,
+    input {
+      position: relative;
+      overflow: hidden;
+      flex: 1 0;
+      width: 0;
+    }
+
+    > label {
+      display: flex;
+    }
+  }
+
+  input.input {
+    background-color: @light;
+    border: 0.25rem solid transparent;
+    border-radius: 0.5rem;
+    color: @text;
+
+    display: inline-block;
+    padding: 0.35rem 0.85rem;
+
+    &:hover,
+    &:active,
+    &:focus-visible {
+      background-color: darken(@light, 2.5%);
+    }
+
+    &:focus-visible {
+      border-color: @border;
+    }
+  }
+
+  input.checkbox {
+    border: 0.2rem solid @border;
+    border-radius: 0.5rem;
+    cursor: pointer;
+
+    position: relative;
+    display: inline-block;
+    width: 3.2rem;
+    height: 3.2rem;
+    padding: 0.4rem;
+
+    &:hover {
+      border-color: darken(@border, 5%);
+    }
+
+    &:focus-visible,
+    &:active {
+      border-color: @blue;
+    }
+
+    &:before {
+      content: "";
+
+      border-radius: 0.2rem;
+      position: absolute;
+      top: 10%;
+      left: 10%;
+
+      width: 80%;
+      height: 80%;
+    }
+
+    &:checked:before {
+      background-color: @border;
+    }
+  }
+
+  .buttonGroups .button {
+    margin-top: 0.4rem;
+    margin-right: 0.4rem;
+  }
+
+  .button {
+    background-color: @light;
+    border-radius: 0.5rem;
+    cursor: pointer;
+
+    text-align: center;
+    color: @text;
+
+    display: inline-block;
+    padding: 0.6rem 0.8rem;
+
+    &:hover,
+    &:active,
+    &:focus-visible {
+      background-color: darken(@light, 2.5%);
+    }
+
+    &:active {
+      box-shadow: inset 0 0 0 0.25rem darken(@light, 5%);
+    }
+
+    &[data-active],
+    &.dark {
+      background-color: @dark;
+      color: #fff;
+
+      &:hover,
+      &:active,
+      &:focus-visible {
+        background-color: lighten(@dark, 6%);
+      }
+
+      &:active {
+        box-shadow: inset 0 0 0 0.25rem darken(@dark, 2.5%);
+      }
+    }
+
+    &.green {
+      background-color: @green;
+      color: #fff;
+
+      &:hover,
+      &:active,
+      &:focus-visible {
+        background-color: darken(@green, 2.5%);
+      }
+
+      &:active {
+        box-shadow: inset 0 0 0 0.25rem darken(@green, 6%);
+      }
+    }
+
+    &.red {
+      background-color: @red;
+      color: #fff;
+
+      &:hover,
+      &:active,
+      &:focus-visible {
+        background-color: darken(@red, 2.5%);
+      }
+
+      &:active {
+        box-shadow: inset 0 0 0 0.25rem darken(@red, 6%);
+      }
+    }
+
+    &.blue {
+      background-color: @blue;
+      color: #fff;
+
+      &:hover,
+      &:active,
+      &:focus-visible {
+        background-color: darken(@blue, 2.5%);
+      }
+
+      &:active {
+        box-shadow: inset 0 0 0 0.25rem darken(@blue, 6%);
+      }
+    }
+  }
+}
