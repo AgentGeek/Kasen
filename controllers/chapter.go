@@ -48,26 +48,22 @@ func Chapter(c *server.Context) {
 		templateName = "reader_legacy.html"
 	}
 
-	getChapter := func() *services.GetChapterResult {
-		return services.GetChapter(id, services.GetChapterOptions{
-			Preloads: []string{
-				services.ChapterRels.Project,
-				services.ChapterRels.Statistic,
-			},
-		})
-	}
-
 	if c.IsCached(templateName) {
 		go func(ip string) {
-			result := getChapter()
+			result := services.GetChapterStats(id)
 			if result.Err == nil {
-				services.IncreaseViewCount(result.Chapter.Stats, ip)
+				services.IncreaseViewCount(result.Stats, ip)
 			}
 		}(c.ClientIP())
 	} else {
 		var chapter *modext.Chapter
 		{
-			result := getChapter()
+			result := services.GetChapter(id, services.GetChapterOptions{
+				Preloads: []string{
+					services.ChapterRels.Project,
+					services.ChapterRels.Statistic,
+				},
+			})
 			if result.Err != nil {
 				c.SetData("error", result.Err)
 				c.HTML(http.StatusBadRequest, "error.html")
