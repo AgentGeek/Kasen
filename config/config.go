@@ -126,8 +126,8 @@ func init() {
 
 		Meta: Meta{
 			BaseURL:     file.Section("meta").Key("base_url").MustString("http://localhost:42072"),
-			Title:       file.Section("meta").Key("title").MustString("CMS for scanlators"),
-			Description: file.Section("meta").Key("description").MustString("Kasen"),
+			Title:       file.Section("meta").Key("title").MustString("Kasen"),
+			Description: file.Section("meta").Key("description").MustString("CMS for scanlators"),
 			Language:    file.Section("meta").Key("language").MustString("en-US"),
 		},
 
