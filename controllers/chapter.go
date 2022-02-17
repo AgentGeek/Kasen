@@ -99,8 +99,9 @@ func Chapter(c *server.Context) {
 		c.SetData("chapters", chapters)
 		c.SetData("pagination", services.CreateChapterPagination(chapter, chapters))
 
-		services.IncreaseViewCount(chapter.Stats, c.ClientIP())
-		chapter.Stats = nil
+		if chapter.Stats != nil {
+			services.IncreaseViewCount(chapter.Stats, c.ClientIP())
+		}
 	}
 
 	c.Cache(http.StatusOK, templateName)
