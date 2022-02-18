@@ -81,30 +81,7 @@
                 </article>
               {{- end }}
             </div>
-            {{- if gt .pagination.TotalPages 1 }}
-              <nav class="pagination" aria-label="Page">
-                <ul>
-                  <li class="first">
-                    <a href="/chapters" title="First page">
-                      <i data-feather="chevrons-left" width="20" height="20" strokeWidth="3"></i>
-                    </a>
-                  </li>
-                  {{- $currentPage := .pagination.CurrentPage }}
-                  {{- range .pagination.Pages }}
-                    <li>
-                      <a {{ if eq $currentPage . }}class="active"{{ end }} href="?page={{ . }}">
-                        <strong>{{ . }}</strong>
-                      </a>
-                    </li>
-                  {{- end }}
-                  <li class="last">
-                    <a href="?page={{ .pagination.TotalPages }}" title="Last page">
-                      <i data-feather="chevrons-right" width="20" height="20" strokeWidth="3"></i>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
-            {{- end }}
+            {{- template "pagination" . }}
           {{- else }}
             <div class="empty">
               {{- if .hasQueries }}
