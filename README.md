@@ -22,9 +22,8 @@ The back-end uses in-memory LRU cache to cache database queries and templates, m
   - [Enable and start PostgreSQL and Redis](#enable-and-start-postgresql-and-redis)
   - [Create a new database and user/role](#create-a-new-database-and-user-role)
   - [Create a new system user](#create-a-new-system-user)
-  - [Create data directories](#create-data-directories)
-  - [Create configuration directory](#create-configuration-directory)
-  - [Build or download the back-end](#build-or-download-the-back-end)
+  - [Create data and configuration directories](#create-data-and-configuration-directories)
+  - [Build the back-end](#build-the-back-end)
   - [Build or download the front-end](#build-or-download-the-front-end)
   - [Create a Systemd unit file](#create-a-systemd-unit-file)
   - [Start the back-end](#start-the-back-end)
@@ -73,13 +72,14 @@ sudo pacman -Syu
 sudo pacman -S git go libvips postgresql redis
 
 # Debian-based distributions
-add-apt-repository -y ppa:strukturag/libde265
-add-apt-repository -y ppa:strukturag/libheif
-add-apt-repository -y ppa:tonimelisma/ppa
-add-apt-repository -y ppa:longsleep/golang-backports
+sudo apt-get install -y software-properties-common
+sudo add-apt-repository -y ppa:strukturag/libde265
+sudo add-apt-repository -y ppa:strukturag/libheif
+sudo add-apt-repository -y ppa:tonimelisma/ppa
+sudo add-apt-repository -y ppa:longsleep/golang-backports
 
-apt-get update -y
-apt-get install -y build-essential git golang-go libvips-dev postgresql redis-server
+sudo apt-get update -y
+sudo apt-get install -y build-essential git golang-go libvips-dev postgresql redis-server
 ```
 
 ### Initialize database cluster
@@ -113,6 +113,16 @@ sudo -u postgres psql --command "CREATE DATABASE kasen OWNER kasen;"
 ### Create a new system user
 
 ```sh
+# Arch-based distributions
+sudo useradd \
+  --system \
+  --shell /sbin/nologin \
+  --user-group \
+  --create-home \
+  --home-dir /home/kasen \
+  kasen
+
+# Debian-based distributions
 sudo adduser \
   --system \
   --shell /bin/bash \
@@ -127,25 +137,11 @@ sudo adduser \
 ```sh
 sudo mkdir -p /var/lib/kasen/{assets,data,templates}
 sudo chown -R kasen:kasen /var/lib/kasen
-sudo chmod -R 750 /var/lib/kasen
+sudo chmod -R 755 /var/lib/kasen
 
 sudo mkdir /etc/kasen
 sudo chown kasen:kasen /etc/kasen
-sudo chmod 750 /etc/kasen
-```
-
-### Create empty configuration and log files
-
-This step may be unnecessary, but required for newer versions of ubuntu. You may skip it and come back when the back-end cannot run.
-
-```sh
-touch /var/lib/kasen/kasen.log
-sudo chown kasen:kasen /var/lib/kasen/kasen.log
-sudo chmod 750 /var/lib/kasen
-
-touch /etc/kasen/config.ini
-sudo chown kasen:kasen /etc/kasen/config.ini
-sudo chmod 750 /etc/kasen/config.ini
+sudo chmod 755 /etc/kasen
 ```
 
 ### Build the back-end
@@ -168,13 +164,13 @@ cd web
 yarn && yarn prod
 mv ../bin/assets ../bin/templates -t /var/lib/kasen
 sudo chown -R kasen:kasen /var/lib/kasen
-sudo chmod -R 750 /var/lib/kasen/{assets,templates}
+sudo chmod -R 755 /var/lib/kasen/{assets,templates}
 
 # Download
 wget -O front-end.tar.xz https://github.com/rs1703/Kasen/releases/download/v0.1.0/front-end.tar.xz
 sudo tar -xf front-end.tar.xz -C /var/lib/kasen
 sudo chown -R kasen:kasen /var/lib/kasen
-sudo chmod -R 750 /var/lib/kasen/{assets,templates}
+sudo chmod -R 755 /var/lib/kasen/{assets,templates}
 ```
 
 ### Create a Systemd unit file
@@ -188,7 +184,7 @@ sudo wget https://raw.githubusercontent.com/rs1703/Kasen/master/kasen.service -P
 The back-end will prompt you name, email and password when you start it for the first time, so you have to run it manually, and not through the systemd.
 
 ```sh
-kasen -config=/etc/kasen/config.ini
+sudo -u kasen kasen -config=/etc/kasen/config.ini
 ```
 
 Once the setup is completed, exit the back-end by pressing <kbd>CTRL+C</kbd> and then start the back-end through the systemd.
