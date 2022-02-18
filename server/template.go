@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"html/template"
 	"io/fs"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -15,7 +16,6 @@ import (
 	"kasen/config"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rs1703/logger"
 )
 
 type RenderOptions struct {
@@ -49,12 +49,12 @@ func LoadTemplates() {
 			return err
 		})
 	if err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	templates, err = template.New("").Funcs(helper).ParseFiles(files...)
 	if err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 }
 

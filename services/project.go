@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"sort"
 	"strings"
@@ -20,7 +21,6 @@ import (
 
 	"github.com/gosimple/slug"
 	"github.com/pkg/errors"
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -103,7 +103,7 @@ func (draft *ProjectDraft) validate() error {
 func CreateProject(draft *ProjectDraft) (*modext.Project, error) {
 	tx, err := WriteDB.Begin()
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -124,7 +124,7 @@ func refreshProjectRels(tx *sql.Tx, p *models.Project, draft *ProjectDraft) erro
 		})
 	}
 	if err := p.SetArtists(tx, false, artists...); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -141,7 +141,7 @@ func refreshProjectRels(tx *sql.Tx, p *models.Project, draft *ProjectDraft) erro
 		})
 	}
 	if err := p.SetAuthors(tx, false, authors...); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -158,7 +158,7 @@ func refreshProjectRels(tx *sql.Tx, p *models.Project, draft *ProjectDraft) erro
 		})
 	}
 	if err := p.SetTags(tx, false, tags...); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -167,7 +167,6 @@ func refreshProjectRels(tx *sql.Tx, p *models.Project, draft *ProjectDraft) erro
 
 // CreateProjectEx creates a new project.
 func CreateProjectEx(tx *sql.Tx, draft *ProjectDraft) (*modext.Project, error) {
-	defer logger.Track()()
 
 	if err := draft.validate(); err != nil {
 		return nil, err
@@ -185,7 +184,7 @@ func CreateProjectEx(tx *sql.Tx, draft *ProjectDraft) (*modext.Project, error) {
 		if strings.Contains(err.Error(), `unique constraint "project_slug"`) {
 			return nil, errs.ErrProjectAlreadyExists
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -194,7 +193,7 @@ func CreateProjectEx(tx *sql.Tx, draft *ProjectDraft) (*modext.Project, error) {
 	}
 
 	if err := tx.Commit(); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -233,8 +232,6 @@ func GetProjectEx(e boil.Executor, id int64, opts GetProjectOptions) (result *Ge
 		return c.(*GetProjectResult)
 	}
 
-	defer logger.Track()()
-
 	result = &GetProjectResult{}
 	defer func() {
 		if result.Project != nil || result.Err != nil {
@@ -263,7 +260,7 @@ func GetProjectEx(e boil.Executor, id int64, opts GetProjectOptions) (result *Ge
 			result.Err = errs.ErrProjectNotFound
 			return
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = errs.ErrUnknown
 		return
 	}
@@ -287,7 +284,7 @@ func GetProjectMd(id string) (*ProjectDraft, error) {
 	u := fmt.Sprintf("%s/manga/%s?includes[]=artist&includes[]=author&includes[]=cover_art", mdBaseURL, id)
 	res, err := http.Get(u)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrProjectMdFetchFailed
 	}
 	defer res.Body.Close()
@@ -550,8 +547,6 @@ func GetProjectsEx(e boil.Executor, opts GetProjectsOptions) (result *GetProject
 		return c.(*GetProjectsResult)
 	}
 
-	defer logger.Track()()
-
 	result = &GetProjectsResult{Projects: []*modext.Project{}}
 	defer func() {
 		if len(result.Projects) > 0 || result.Total > 0 || result.Err != nil {
@@ -701,14 +696,14 @@ func GetProjectsEx(e boil.Executor, opts GetProjectsOptions) (result *GetProject
 
 	projects, err := models.Projects(selectQueries...).All(e)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = errs.ErrUnknown
 		return
 	}
 
 	count, err := models.Projects(countQueries...).All(e)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = errs.ErrUnknown
 		return
 	}
@@ -726,7 +721,7 @@ func GetProjectsEx(e boil.Executor, opts GetProjectsOptions) (result *GetProject
 func UpdateProject(id int64, draft *ProjectDraft) (*modext.Project, error) {
 	tx, err := WriteDB.Begin()
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return UpdateProjectEx(tx, id, draft)
@@ -735,8 +730,6 @@ func UpdateProject(id int64, draft *ProjectDraft) (*modext.Project, error) {
 // UpdateProjectEx updates a project.
 // Returns the updated project if successful.
 func UpdateProjectEx(tx *sql.Tx, id int64, draft *ProjectDraft) (*modext.Project, error) {
-	defer logger.Track()()
-
 	if err := draft.validate(); err != nil {
 		return nil, err
 	}
@@ -746,7 +739,7 @@ func UpdateProjectEx(tx *sql.Tx, id int64, draft *ProjectDraft) (*modext.Project
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrProjectNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -773,17 +766,17 @@ func UpdateProjectEx(tx *sql.Tx, id int64, draft *ProjectDraft) (*modext.Project
 		ProjectCols.Rating,
 		ProjectCols.UpdatedAt,
 	)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
 	if err := refreshProjectRels(tx, p, draft); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
 	if err := tx.Commit(); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -803,14 +796,12 @@ func PublishProject(id int64) (*modext.Project, error) {
 // PublishProjectEx publishes a project.
 // Returns the updated project if successful.
 func PublishProjectEx(e boil.Executor, id int64) (*modext.Project, error) {
-	defer logger.Track()()
-
 	p, err := models.FindProject(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrProjectNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -822,7 +813,7 @@ func PublishProjectEx(e boil.Executor, id int64) (*modext.Project, error) {
 	p.PublishedAt = null.TimeFrom(time.Now().UTC())
 
 	if err := p.Update(e, boil.Whitelist(ProjectCols.PublishedAt)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -842,14 +833,12 @@ func UnpublishProject(id int64) (*modext.Project, error) {
 // UnpublishProjectEx unpublishes a project.
 // Returns the updated project if successful.
 func UnpublishProjectEx(e boil.Executor, id int64) (*modext.Project, error) {
-	defer logger.Track()()
-
 	p, err := models.FindProject(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrProjectNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -861,7 +850,7 @@ func UnpublishProjectEx(e boil.Executor, id int64) (*modext.Project, error) {
 	p.PublishedAt.Valid = false
 
 	if err := p.Update(e, boil.Whitelist(ProjectCols.PublishedAt)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -881,14 +870,12 @@ func LockProject(id int64) (*modext.Project, error) {
 // LockProjectEx locks a project.
 // Returns the updated project if successful.
 func LockProjectEx(e boil.Executor, id int64) (*modext.Project, error) {
-	defer logger.Track()()
-
 	p, err := models.FindProject(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrProjectNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -896,7 +883,7 @@ func LockProjectEx(e boil.Executor, id int64) (*modext.Project, error) {
 	p.Locked = null.BoolFrom(true)
 
 	if err := p.Update(e, boil.Whitelist(ProjectCols.Locked)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -913,14 +900,12 @@ func UnlockProject(id int64) (*modext.Project, error) {
 // UnlockProjectEx unlocks a project.
 // Returns the updated project if successful.
 func UnlockProjectEx(e boil.Executor, id int64) (*modext.Project, error) {
-	defer logger.Track()()
-
 	p, err := models.FindProject(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrProjectNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -928,7 +913,7 @@ func UnlockProjectEx(e boil.Executor, id int64) (*modext.Project, error) {
 	p.Locked = null.NewBool(false, false)
 
 	if err := p.Update(e, boil.Whitelist(ProjectCols.Locked)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -944,14 +929,12 @@ func DeleteProject(id int64) error {
 
 // DeleteProjectEx deletes a project.
 func DeleteProjectEx(e boil.Executor, id int64) error {
-	defer logger.Track()()
-
 	p, err := models.FindProject(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return errs.ErrProjectNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -960,7 +943,7 @@ func DeleteProjectEx(e boil.Executor, id int64) error {
 	}
 
 	if err := p.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -986,12 +969,10 @@ func CheckProjectExists(id int64) (int64, string) {
 // CheckProjectExistsEx checks if a project exists and returns
 // id and slug of the project if successful.
 func CheckProjectExistsEx(e boil.Executor, id int64) (int64, string) {
-	defer logger.Track()()
-
 	p, err := models.FindProject(e, id)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			logger.Err.Println(err)
+			log.Println(err)
 		}
 		return 0, ""
 	}
@@ -1007,12 +988,10 @@ func CheckProjectExistsBySlug(slug string) (int64, string) {
 // CheckProjectExistsBySlugEx checks if a project exists by slug and
 // returns id and slug of the project if successful.
 func CheckProjectExistsBySlugEx(e boil.Executor, slug string) (int64, string) {
-	defer logger.Track()()
-
 	p, err := models.Projects(Where("slug ILIKE ?", slug)).One(e)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			logger.Err.Println(err)
+			log.Println(err)
 		}
 		return 0, ""
 	}
@@ -1028,12 +1007,10 @@ func CheckProjectExistsByTitle(title string) (int64, string) {
 // CheckProjectExistsByTitleEx checks if a project exists by title and
 // returns id and slug of the project if successful.
 func CheckProjectExistsByTitleEx(e boil.Executor, title string) (int64, string) {
-	defer logger.Track()()
-
 	p, err := models.Projects(Where("title ILIKE ?", title)).One(e)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			logger.Err.Println(err)
+			log.Println(err)
 		}
 		return 0, ""
 	}
@@ -1049,12 +1026,10 @@ func CheckProjectExistsBySlugOrTitle(slugOrTitle string) (int64, string) {
 // CheckProjectExistsBySlugOrTitleEx checks if a project exists by slug or title and
 // returns id and slug of the project if successful.
 func CheckProjectExistsBySlugOrTitleEx(e boil.Executor, slugOrTitle string) (int64, string) {
-	defer logger.Track()()
-
 	p, err := models.Projects(Where("slug ILIKE ? OR title ILIKE ?", slugOrTitle, slugOrTitle)).One(e)
 	if err != nil {
 		if err != sql.ErrNoRows {
-			logger.Err.Println(err)
+			log.Println(err)
 		}
 		return 0, ""
 	}

@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"log"
 	"strings"
 
 	. "kasen/database"
@@ -10,7 +11,6 @@ import (
 	"kasen/models"
 	"kasen/modext"
 
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
@@ -37,11 +37,11 @@ func CreateTagEx(e boil.Executor, name string) (*modext.Tag, error) {
 	if err == sql.ErrNoRows {
 		t = &models.Tag{Name: name}
 		if err = t.Insert(e, boil.Infer()); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
 	} else if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -60,7 +60,7 @@ func GetTagEx(e boil.Executor, id int64) (*modext.Tag, error) {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrTagNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return modext.NewTag(t), nil
@@ -78,7 +78,7 @@ func GetTagByNameEx(e boil.Executor, name string) (*modext.Tag, error) {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrTagNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return modext.NewTag(t), nil
@@ -96,7 +96,7 @@ func GetTagBySlugEx(e boil.Executor, slug string) (*modext.Tag, error) {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrTagNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return modext.NewTag(t), nil
@@ -114,7 +114,7 @@ func GetTagBySlugOrNameEx(e boil.Executor, slugOrName string) (*modext.Tag, erro
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrTagNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return modext.NewTag(t), nil
@@ -129,7 +129,7 @@ func GetTags() ([]*modext.Tag, error) {
 func GetTagsEx(e boil.Executor) ([]*modext.Tag, error) {
 	tags, err := models.Tags(OrderBy("name ASC")).All(e)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -161,13 +161,13 @@ func UpdateTagEx(e boil.Executor, id int64, name string) (*modext.Tag, error) {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrTagNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
 	t.Name = name
 	if err = t.Update(e, boil.Infer()); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -186,12 +186,12 @@ func DeleteTagEx(e boil.Executor, id int64) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrTagNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = t.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -210,12 +210,12 @@ func DeleteTagByNameEx(e boil.Executor, name string) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrTagNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = t.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -234,12 +234,12 @@ func DeleteTagBySlugEx(e boil.Executor, slug string) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrTagNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = t.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -258,12 +258,12 @@ func DeleteTagBySlugOrNameEx(e boil.Executor, slugOrName string) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrTagNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = t.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 

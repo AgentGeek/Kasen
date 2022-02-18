@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"math"
 	"net/http"
 	"net/url"
@@ -29,7 +30,6 @@ import (
 
 	"github.com/gosimple/slug"
 	"github.com/pkg/errors"
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"golang.org/x/time/rate"
 )
@@ -73,19 +73,19 @@ func downloadFile(source string) (*os.File, error) {
 
 	tmp, err := os.CreateTemp(GetTempDir(), "tmp-")
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
 	res, err := http.Get(source)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	defer res.Body.Close()
 
 	if _, err = io.Copy(tmp, res.Body); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return tmp, nil
@@ -181,15 +181,7 @@ func resizeImage(filepath, outputPath string, o ResizeOptions) error {
 	if err != nil {
 		return err
 	}
-
-	out, err := os.Create(outputPath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	_, err = buf.WriteTo(out)
-	return err
+	return WriteFile(outputPath, buf.Bytes())
 }
 
 // sanitizeOrder sanitizes the given order.
@@ -320,8 +312,7 @@ func formatChapterModel(c *models.Chapter, short ...interface{}) string {
 //
 // The directory will be created in the <data> directory, using the
 // project's slug as the directory name. Chapters and covers directory
-// will also be created inside the project directory. They will be
-// created with os.ModePerm.
+// will also be created inside the project directory.
 //
 // A symbolic link to the project directory will be created in the
 // <data>/symlinks directory, using the project's ID as the link name.
@@ -333,17 +324,19 @@ func formatChapterModel(c *models.Chapter, short ...interface{}) string {
 // which points to it, will be removed when the project is deleted.
 func createProjectDir(p *models.Project) error {
 	dir := getProjectDir(p.Slug)
-	if err := os.MkdirAll(filepath.Join(dir, "chapters"), os.ModePerm); err != nil {
+	if err := MkdirAll(filepath.Join(dir, "chapters")); err != nil {
 		return errors.Wrap(err, "failed to create chapters directory")
 	}
 
-	if err := os.MkdirAll(filepath.Join(dir, "covers"), os.ModePerm); err != nil {
+	if err := MkdirAll(filepath.Join(dir, "covers")); err != nil {
 		return errors.Wrap(err, "failed to create covers directory")
 	}
 
-	if err := os.Symlink(dir, getProjectSymlink(p.ID)); err != nil {
+	symlink := getProjectSymlink(p.ID)
+	if err := Symlink(dir, symlink); err != nil {
 		return errors.Wrap(err, "failed to create project symlink")
 	}
+
 	return nil
 }
 
@@ -384,7 +377,6 @@ func removeProjectDir(p *models.Project) error {
 //
 // The directory will be created inside the project's directory,
 // using human readable format of the chapter as the directory name.
-// It will be created with os.ModePerm.
 //
 // A symbolic link to the chapter directory will be created in the
 // <data>/symlinks/chapters directory, using the chapter's id as the
@@ -415,11 +407,12 @@ func createChapterDir(c *models.Chapter) error {
 		}
 	}
 
-	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+	if err := MkdirAll(dir); err != nil {
 		return errors.Wrap(err, "failed to create chapter directory")
 	}
 
-	if err := os.Symlink(dir, getChapterSymlink(c.ID)); err != nil {
+	symlink := getChapterSymlink(c.ID)
+	if err := Symlink(dir, symlink); err != nil {
 		return errors.Wrap(err, "failed to create chapter symlink")
 	}
 
@@ -462,7 +455,7 @@ func renameChapterDir(c *models.Chapter) error {
 		return errors.Wrap(err, "failed to remove the old chapter symlink")
 	}
 
-	if err := os.Symlink(dir, symlink); err != nil {
+	if err := Symlink(dir, symlink); err != nil {
 		return errors.Wrap(err, "failed to create a new symlink")
 	}
 
@@ -513,7 +506,7 @@ func renameProjectDir(p *models.Project) error {
 		return errors.Wrap(err, "failed to remove the old project symlink")
 	}
 
-	if err := os.Symlink(dir, symlink); err != nil {
+	if err := Symlink(dir, symlink); err != nil {
 		return errors.Wrap(err, "failed to create a new symlink")
 	}
 
@@ -640,7 +633,7 @@ func refreshChapterCache(id int64) {
 	for _, k := range keys {
 		opts := GetChapterOptions{}
 		if err := json.Unmarshal([]byte(k), &opts); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			continue
 		}
 		GetChapter(id, opts)
@@ -656,7 +649,7 @@ func refreshChaptersCache() {
 	for _, k := range keys {
 		opts := GetChaptersOptions{}
 		if err := json.Unmarshal([]byte(k), &opts); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			continue
 		}
 		GetChapters(opts)
@@ -672,7 +665,7 @@ func refreshProjectChaptersCache(pid int64) {
 	for _, k := range keys {
 		opts := GetChaptersOptions{}
 		if err := json.Unmarshal([]byte(k), &opts); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			continue
 		}
 		GetChapters(opts)
@@ -688,7 +681,7 @@ func refreshProjectCache(id int64) {
 	for _, k := range keys {
 		opts := GetProjectOptions{}
 		if err := json.Unmarshal([]byte(k), &opts); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			continue
 		}
 		GetProject(id, opts)
@@ -703,7 +696,7 @@ func refreshProjectsCache() {
 	for _, k := range keys {
 		opts := GetProjectsOptions{}
 		if err := json.Unmarshal([]byte(k), &opts); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			continue
 		}
 		GetProjects(opts)
@@ -772,7 +765,9 @@ func RemapSymlinks() error {
 	os.RemoveAll(symlinksDir)
 
 	chaptersSymlinksDir := filepath.Join(symlinksDir, "chapters")
-	os.MkdirAll(chaptersSymlinksDir, os.ModePerm)
+	if err := MkdirAll(chaptersSymlinksDir); err != nil {
+		return err
+	}
 
 	projects, err := models.Projects(qm.Load(ProjectRels.Chapters)).All(ReadDB)
 	if err != nil {
@@ -781,7 +776,11 @@ func RemapSymlinks() error {
 
 	for _, project := range projects {
 		projectDir := getProjectDir(project.Slug)
-		os.Symlink(projectDir, getProjectSymlink(project.ID))
+
+		symlink := getProjectSymlink(project.ID)
+		if err := Symlink(projectDir, symlink); err != nil {
+			return err
+		}
 
 		for _, chapter := range project.R.Chapters {
 			dir := filepath.Join(projectDir, "chapters", slug.Make(formatChapterModel(chapter)))
@@ -800,7 +799,11 @@ func RemapSymlinks() error {
 					for _, page := range chapter.Pages {
 						if fileName == page {
 							ok = true
-							os.Symlink(dir, getChapterSymlink(chapter.ID))
+
+							symlink := getChapterSymlink(chapter.ID)
+							if err := Symlink(dir, symlink); err != nil {
+								return err
+							}
 							break
 						}
 					}
@@ -920,4 +923,30 @@ func CreateChapterPagination(currentChapter *modext.Chapter, chapters []*modext.
 	}
 
 	return pagination
+}
+
+// This function simply calls os.MkDir all and then chowns the directory.
+func MkdirAll(path string) error {
+	if err := os.MkdirAll(path, 0755); err != nil {
+		return err
+	}
+	return os.Chown(path, config.UserID, config.GroupID)
+}
+
+// This function simply calls os.Symlink and then chmods and chowns the symlink.
+func Symlink(oldname, newname string) error {
+	if err := os.Symlink(oldname, newname); err != nil {
+		return err
+	} else if err := os.Chmod(newname, 0755); err != nil {
+		return err
+	}
+	return os.Chown(newname, config.UserID, config.GroupID)
+}
+
+// This function simply calls os.WriteFile and then chowns the file.
+func WriteFile(name string, data []byte) error {
+	if err := os.WriteFile(name, data, 0755); err != nil {
+		return err
+	}
+	return os.Chown(name, config.UserID, config.GroupID)
 }

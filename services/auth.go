@@ -1,10 +1,11 @@
 package services
 
 import (
+	"log"
+
 	"kasen/config"
 	"kasen/errs"
 
-	"github.com/rs1703/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -34,7 +35,7 @@ func Login(opts LoginOptions) (rt, st *Token, err error) {
 	u, err := GetUserByEmail(opts.Email)
 	if err != nil {
 		if err != errs.ErrUserNotFound {
-			logger.Err.Println(err)
+			log.Println(err)
 		}
 		return nil, nil, errs.ErrInvalidCredentials
 	}
@@ -43,7 +44,7 @@ func Login(opts LoginOptions) (rt, st *Token, err error) {
 		if err == bcrypt.ErrMismatchedHashAndPassword {
 			return nil, nil, errs.ErrInvalidCredentials
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, nil, errs.ErrUnknown
 	}
 
@@ -88,7 +89,7 @@ func RefreshToken(rt string) (uid int64, st *Token, err error) {
 
 	st, err = createToken(uid, config.GetSecurity().JWTSessionSecret, SessionExpiration)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return 0, nil, errs.ErrUnknown
 	}
 	return uid, st, nil

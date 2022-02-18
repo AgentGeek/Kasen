@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"log"
 	"strings"
 
 	. "kasen/database"
@@ -10,7 +11,6 @@ import (
 	"kasen/models"
 	"kasen/modext"
 
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
@@ -37,11 +37,11 @@ func CreateAuthorEx(e boil.Executor, name string) (*modext.Author, error) {
 	if err == sql.ErrNoRows {
 		a = &models.Author{Name: name}
 		if err = a.Insert(e, boil.Infer()); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
 	} else if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -57,7 +57,7 @@ func GetAuthors() ([]*modext.Author, error) {
 func GetAuthorsEx(e boil.Executor) ([]*modext.Author, error) {
 	authors, err := models.Authors(OrderBy("name ASC")).All(e)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -81,7 +81,7 @@ func GetAuthorEx(e boil.Executor, id int64) (*modext.Author, error) {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrAuthorNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -100,7 +100,7 @@ func GetAuthorByNameEx(e boil.Executor, name string) (*modext.Author, error) {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrAuthorNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -119,7 +119,7 @@ func GetAuthorBySlugEx(e boil.Executor, slug string) (*modext.Author, error) {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrAuthorNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return modext.NewAuthor(a), nil
@@ -137,7 +137,7 @@ func GetAuthorBySlugOrNameEx(e boil.Executor, slugOrName string) (*modext.Author
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrAuthorNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return modext.NewAuthor(a), nil
@@ -163,13 +163,13 @@ func UpdateAuthorEx(e boil.Executor, id int64, name string) (*modext.Author, err
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrAuthorNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
 	a.Name = name
 	if err = a.Update(e, boil.Infer()); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -188,12 +188,12 @@ func DeleteAuthorEx(e boil.Executor, id int64) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrAuthorNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = a.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -212,12 +212,12 @@ func DeleteAuthorByNameEx(e boil.Executor, name string) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrAuthorNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = a.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -236,12 +236,12 @@ func DeleteAuthorBySlugEx(e boil.Executor, slug string) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrAuthorNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = a.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -260,12 +260,12 @@ func DeleteAuthorBySlugOrNameEx(e boil.Executor, slugOrName string) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrAuthorNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = a.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 

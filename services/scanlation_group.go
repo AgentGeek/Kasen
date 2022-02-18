@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"log"
 	"strings"
 
 	. "kasen/database"
@@ -10,7 +11,6 @@ import (
 	"kasen/models"
 	"kasen/modext"
 
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
@@ -38,11 +38,11 @@ func CreateScanlationGroupEx(e boil.Executor, name string) (*modext.ScanlationGr
 	if err == sql.ErrNoRows {
 		g = &models.ScanlationGroup{Name: name}
 		if err = g.Insert(e, boil.Infer()); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
 	} else if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -58,7 +58,7 @@ func GetScanlationGroups() ([]*modext.ScanlationGroup, error) {
 func GetScanlationGroupsEx(e boil.Executor) ([]*modext.ScanlationGroup, error) {
 	groups, err := models.ScanlationGroups(OrderBy("name ASC")).All(e)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -81,7 +81,7 @@ func GetScanlationGroupEx(e boil.Executor, id int64) (*modext.ScanlationGroup, e
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrScanlationGroupNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -100,7 +100,7 @@ func GetScanlationGroupByNameEx(e boil.Executor, name string) (*modext.Scanlatio
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrScanlationGroupNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -119,7 +119,7 @@ func GetScanlationGroupBySlugEx(e boil.Executor, slug string) (*modext.Scanlatio
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrScanlationGroupNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -138,7 +138,7 @@ func GetScanlationGroupBySlugOrNameEx(e boil.Executor, slugOrName string) (*mode
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrScanlationGroupNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -165,13 +165,13 @@ func UpdateScanlationGroupEx(e boil.Executor, id int64, name string) (*modext.Sc
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrScanlationGroupNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
 	g.Name = name
 	if err = g.Update(e, boil.Infer()); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -190,12 +190,12 @@ func DeleteScanlationGroupEx(e boil.Executor, id int64) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrScanlationGroupNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = g.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -214,12 +214,12 @@ func DeleteScanlationGroupBySlugEx(e boil.Executor, slug string) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrScanlationGroupNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = g.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -238,12 +238,12 @@ func DeleteScanlationGroupByNameEx(e boil.Executor, name string) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrScanlationGroupNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = g.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -262,12 +262,12 @@ func DeleteScanlationGroupBySlugOrNameEx(e boil.Executor, slugOrName string) err
 		if err == sql.ErrNoRows {
 			return errs.ErrScanlationGroupNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err = g.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 

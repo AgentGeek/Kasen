@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"log"
 	"strconv"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
-	"github.com/rs1703/logger"
 )
 
 type Token struct {
@@ -48,13 +48,13 @@ func CreateToken(uid int64) (rt *Token, st *Token, err error) {
 
 	rt, err = createToken(uid, security.JWTRefreshSecret, RefreshExpiration)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, nil, errs.ErrUnknown
 	}
 
 	st, err = createToken(uid, security.JWTSessionSecret, SessionExpiration)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, nil, errs.ErrUnknown
 	}
 	return
@@ -72,7 +72,7 @@ func parseToken(t string, secret []byte) (*jwt.Token, error) {
 func DeleteToken(rt string, secret []byte) error {
 	t, err := parseToken(rt, secret)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -87,7 +87,7 @@ func DeleteToken(rt string, secret []byte) error {
 	}
 
 	if _, err = Redis.Del(context.Background(), id).Result(); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 	return nil
@@ -118,7 +118,7 @@ func verifyToken(tStr string, secret []byte) (uid int64, err error) {
 
 func VerifySessionToken(st string) (uid int64, err error) {
 	if uid, err = verifyToken(st, config.GetSecurity().JWTSessionSecret); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return 0, errs.ErrUnknown
 	}
 	return
@@ -126,7 +126,7 @@ func VerifySessionToken(st string) (uid int64, err error) {
 
 func VerifyRefreshToken(rt string) (uid int64, err error) {
 	if uid, err = verifyToken(rt, config.GetSecurity().JWTRefreshSecret); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return 0, errs.ErrUnknown
 	}
 	return

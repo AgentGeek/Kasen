@@ -1,6 +1,7 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha256"
 	"database/sql"
@@ -8,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -28,7 +30,6 @@ import (
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/pkg/errors"
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
@@ -41,7 +42,7 @@ func GetPagesCacheStats() *CacheStats {
 func ServePage(id int64, fn string, width int, w http.ResponseWriter, r *http.Request) {
 	dir, err := getChapterDir(id)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -58,7 +59,7 @@ func ServePage(id int64, fn string, width int, w http.ResponseWriter, r *http.Re
 
 		if _, err := os.Stat(fp); os.IsNotExist(err) {
 			if err := resizeImage(original, fp, ResizeOptions{Width: width}); err != nil {
-				logger.Err.Println(err)
+				log.Println(err)
 				fp = original
 			}
 		}
@@ -81,7 +82,7 @@ func UploadPageEx(e boil.Executor, cid int64, fileName string, f *os.File, uploa
 
 	stat, err := f.Stat()
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -94,7 +95,7 @@ func UploadPageEx(e boil.Executor, cid int64, fileName string, f *os.File, uploa
 	f.Seek(0, io.SeekStart)
 	mime, err := mimetype.DetectReader(f)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -107,7 +108,7 @@ func UploadPageEx(e boil.Executor, cid int64, fileName string, f *os.File, uploa
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrChapterNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -134,7 +135,7 @@ func UploadPageEx(e boil.Executor, cid int64, fileName string, f *os.File, uploa
 	hasher := sha256.New()
 	f.Seek(0, io.SeekStart)
 	if _, err := io.Copy(hasher, f); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -147,16 +148,15 @@ func UploadPageEx(e boil.Executor, cid int64, fileName string, f *os.File, uploa
 	fp := filepath.Join(dir, fn)
 
 	if _, err := os.Stat(fp); os.IsNotExist(err) {
-		out, err := os.Create(fp)
-		if err != nil {
-			logger.Err.Println(err)
+		var buf bytes.Buffer
+		f.Seek(0, io.SeekStart)
+		if _, err = io.Copy(&buf, f); err != nil {
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
-		defer out.Close()
 
-		f.Seek(0, io.SeekStart)
-		if _, err = io.Copy(out, f); err != nil {
-			logger.Err.Println(err)
+		if err := WriteFile(fp, buf.Bytes()); err != nil {
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
 	}
@@ -170,7 +170,7 @@ func UploadPageEx(e boil.Executor, cid int64, fileName string, f *os.File, uploa
 		})
 
 		if err := c.Update(e, boil.Whitelist(ChapterCols.Pages, ChapterCols.UpdatedAt)); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
 
@@ -193,7 +193,7 @@ func UploadPageMultipart(cid int64, fh *multipart.FileHeader, uploader *modext.U
 func UploadPageMultipartEx(e boil.Executor, cid int64, fh *multipart.FileHeader, uploader *modext.User) ([]string, error) {
 	tmp, err := os.CreateTemp(GetTempDir(), "tmp-")
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	defer tmp.Close()
@@ -201,7 +201,7 @@ func UploadPageMultipartEx(e boil.Executor, cid int64, fh *multipart.FileHeader,
 
 	f, err := fh.Open()
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -209,7 +209,7 @@ func UploadPageMultipartEx(e boil.Executor, cid int64, fh *multipart.FileHeader,
 	f.Close()
 
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -229,7 +229,7 @@ func UploadPageFromSource(cid int64, source string, uploader *modext.User) ([]st
 func UploadPageFromSourceEx(e boil.Executor, cid int64, source string, uploader *modext.User) ([]string, error) {
 	tmp, err := downloadFile(source)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	defer tmp.Close()
@@ -259,8 +259,6 @@ func GetPagesEx(e boil.Executor, cid int64) (result *GetPagesResult) {
 		return c.(*GetPagesResult)
 	}
 
-	defer logger.Track()()
-
 	result = &GetPagesResult{Pages: []string{}}
 	defer func() {
 		if result.Pages != nil || result.Err != nil {
@@ -275,7 +273,7 @@ func GetPagesEx(e boil.Executor, cid int64) (result *GetPagesResult) {
 			result.Err = errs.ErrChapterNotFound
 			return
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = errs.ErrUnknown
 		return
 	}
@@ -302,7 +300,7 @@ func GetPagesMd(id string) (*PagesMd, error) {
 
 	res, err := http.Get(fmt.Sprintf("https://api.mangadex.org/at-home/server/%s", id))
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrPageMdFetchFailed
 	}
 	defer res.Body.Close()
@@ -350,7 +348,7 @@ func DeletePageEx(e boil.Executor, cid int64, fileName string, user *modext.User
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrChapterNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -384,7 +382,7 @@ func DeletePageEx(e boil.Executor, cid int64, fileName string, user *modext.User
 			return err
 		})
 		if err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 		}
 	}
 
@@ -392,7 +390,7 @@ func DeletePageEx(e boil.Executor, cid int64, fileName string, user *modext.User
 		ChapterCols.Pages,
 		ChapterCols.UpdatedAt,
 	)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 

@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/pprof"
 	"path/filepath"
@@ -13,7 +14,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	"github.com/rs1703/logger"
 )
 
 type Handler func(c *Context)
@@ -81,7 +81,7 @@ func Init() {
 func Start() {
 	port := config.GetServer().Port
 	if gin.Mode() != gin.DebugMode {
-		logger.Inf.Println("Listening and serving HTTP on :", port)
+		log.Println("Listening and serving HTTP on :", port)
 	}
 
 	srv := &http.Server{
@@ -92,7 +92,7 @@ func Start() {
 		MaxHeaderBytes: 1 << 20,
 	}
 	if err := srv.ListenAndServe(); err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 }
 

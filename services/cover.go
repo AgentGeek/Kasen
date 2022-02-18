@@ -1,10 +1,12 @@
 package services
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"database/sql"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -20,7 +22,6 @@ import (
 	"kasen/modext"
 
 	"github.com/gabriel-vasile/mimetype"
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
@@ -55,7 +56,7 @@ func ServeCover(slug, fn string, width int, rw http.ResponseWriter, r *http.Requ
 
 			err := resizeImage(original, fp, o)
 			if err != nil {
-				logger.Err.Println(err)
+				log.Println(err)
 				fp = original
 			}
 		}
@@ -83,7 +84,7 @@ func UploadCoverEx(e boil.Executor, pid int64, fileName string, f *os.File, uplo
 
 	stat, err := f.Stat()
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -96,7 +97,7 @@ func UploadCoverEx(e boil.Executor, pid int64, fileName string, f *os.File, uplo
 	f.Seek(0, io.SeekStart)
 	mime, err := mimetype.DetectReader(f)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -116,7 +117,7 @@ func UploadCoverEx(e boil.Executor, pid int64, fileName string, f *os.File, uplo
 	hasher := sha256.New()
 	f.Seek(0, io.SeekStart)
 	if _, err := io.Copy(hasher, f); err != nil {
-		logger.Err.Panic(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -129,16 +130,15 @@ func UploadCoverEx(e boil.Executor, pid int64, fileName string, f *os.File, uplo
 	fp := filepath.Join(dir, "covers", fn)
 
 	if _, err := os.Stat(fp); os.IsNotExist(err) {
-		out, err := os.Create(fp)
-		if err != nil {
-			logger.Err.Println(err)
+		var buf bytes.Buffer
+		f.Seek(0, io.SeekStart)
+		if _, err = io.Copy(&buf, f); err != nil {
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
-		defer out.Close()
 
-		f.Seek(0, io.SeekStart)
-		if _, err = io.Copy(out, f); err != nil {
-			logger.Err.Println(err)
+		if err := WriteFile(fp, buf.Bytes()); err != nil {
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
 	}
@@ -147,13 +147,13 @@ func UploadCoverEx(e boil.Executor, pid int64, fileName string, f *os.File, uplo
 	if err == sql.ErrNoRows {
 		c = &models.Cover{ProjectID: pid, FileName: fn}
 		if err = c.Insert(e, boil.Infer()); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
 
 		CoverCache.PurgeWithPrefix(c.ProjectID)
 	} else if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -172,7 +172,7 @@ func UploadCoverMultipart(pid int64, fh *multipart.FileHeader, uploader *modext.
 func UploadCoverMultipartEx(e boil.Executor, pid int64, fh *multipart.FileHeader, uploader *modext.User) (*modext.Cover, error) {
 	tmp, err := os.CreateTemp(GetTempDir(), "tmp-")
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	defer tmp.Close()
@@ -180,7 +180,7 @@ func UploadCoverMultipartEx(e boil.Executor, pid int64, fh *multipart.FileHeader
 
 	f, err := fh.Open()
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -188,7 +188,7 @@ func UploadCoverMultipartEx(e boil.Executor, pid int64, fh *multipart.FileHeader
 	f.Close()
 
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -207,7 +207,7 @@ func UploadCoverFromSource(pid int64, source string, uploader *modext.User) (*mo
 func UploadCoverFromSourceEx(e boil.Executor, pid int64, source string, uploader *modext.User) (*modext.Cover, error) {
 	tmp, err := downloadFile(source)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	defer tmp.Close()
@@ -237,8 +237,6 @@ func GetCoverEx(e boil.Executor, pid int64) (result *GetCoverResult) {
 		return c.(*GetCoverResult)
 	}
 
-	defer logger.Track()()
-
 	result = &GetCoverResult{}
 	defer func() {
 		if result.Cover != nil || result.Err != nil {
@@ -256,7 +254,7 @@ func GetCoverEx(e boil.Executor, pid int64) (result *GetCoverResult) {
 			result.Err = errs.ErrProjectNotFound
 			return
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = errs.ErrUnknown
 		return
 	}
@@ -288,8 +286,6 @@ func GetCoversEx(e boil.Executor, pid int64) (result *GetCoversResult) {
 		return c.(*GetCoversResult)
 	}
 
-	defer logger.Track()()
-
 	result = &GetCoversResult{}
 	defer func() {
 		if result.Covers != nil || result.Err != nil {
@@ -307,7 +303,7 @@ func GetCoversEx(e boil.Executor, pid int64) (result *GetCoversResult) {
 			result.Err = errs.ErrProjectNotFound
 			return
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = errs.ErrUnknown
 		return
 	}
@@ -333,7 +329,7 @@ func SetCoverEx(e boil.Executor, pid, cid int64) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrProjectNotFound
 		}
-		logger.Err.Println()
+		log.Println()
 		return errs.ErrUnknown
 	}
 
@@ -357,7 +353,7 @@ func SetCoverEx(e boil.Executor, pid, cid int64) error {
 	p.CoverID.Valid = true
 
 	if err := p.Update(e, boil.Whitelist(ProjectCols.CoverID, ProjectCols.UpdatedAt)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -383,12 +379,12 @@ func DeleteCoverEx(e boil.Executor, id int64) error {
 		if err == sql.ErrNoRows {
 			return errs.ErrCoverNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	if err := c.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 

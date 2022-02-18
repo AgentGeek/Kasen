@@ -2,6 +2,7 @@ package services
 
 import (
 	"database/sql"
+	"log"
 	"strings"
 
 	. "kasen/database"
@@ -11,7 +12,6 @@ import (
 	"kasen/models"
 	"kasen/modext"
 
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"golang.org/x/crypto/bcrypt"
@@ -73,7 +73,7 @@ func CreateUserEx(e boil.Executor, opts CreateUserOptions) (*modext.User, error)
 
 	hashedPassword, err := hashPassword(opts.RawPassword)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -98,7 +98,7 @@ func CreateUserEx(e boil.Executor, opts CreateUserOptions) (*modext.User, error)
 	}
 
 	if err := user.Insert(e, boil.Infer()); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -119,7 +119,7 @@ func GetUserEx(e boil.Executor, id int64) (*modext.User, error) {
 			return nil, errs.ErrUserNotFound
 		}
 
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -140,7 +140,7 @@ func GetUserByEmailEx(e boil.Executor, email string) (*modext.User, error) {
 			return nil, errs.ErrUserNotFound
 		}
 
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -156,7 +156,7 @@ func GetUsers() ([]*modext.User, error) {
 func GetUsersEx(e boil.Executor) ([]*modext.User, error) {
 	users, err := models.Users().All(e)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -190,7 +190,7 @@ func UpdateUserNameEx(e boil.Executor, user *modext.User, name string) error {
 	user.Name = name
 
 	if err := u.Update(WriteDB, boil.Whitelist(UserCols.Name, UserCols.UpdatedAt)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -223,7 +223,7 @@ func UpdateUserEmailEx(e boil.Executor, user *modext.User, email string) error {
 	u.Email = email
 
 	if err := u.Update(e, boil.Whitelist(UserCols.Email, UserCols.UpdatedAt)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -258,13 +258,13 @@ func UpdateUserPasswordEx(e boil.Executor, user *modext.User, opts UpdateUserPas
 		if err == bcrypt.ErrMismatchedHashAndPassword {
 			return errs.ErrInvalidCredentials
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
 	hashedPassword, err := hashPassword(opts.NewRawPassword)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -272,7 +272,7 @@ func UpdateUserPasswordEx(e boil.Executor, user *modext.User, opts UpdateUserPas
 	u.Password = hashedPassword
 
 	if err := u.Update(e, boil.Whitelist(UserCols.Password, UserCols.UpdatedAt)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -297,7 +297,7 @@ func AddUserPermissionEx(e boil.Executor, user *modext.User, permission string) 
 		user.Permissions = u.Permissions
 
 		if err := u.Update(e, boil.Whitelist(UserCols.Permissions, UserCols.UpdatedAt)); err != nil {
-			logger.Err.Println(err)
+			log.Println(err)
 			return nil, errs.ErrUnknown
 		}
 	}
@@ -318,7 +318,7 @@ func UpdateUserPermissionsEx(e boil.Executor, user *modext.User, permissions []s
 	user.Permissions = u.Permissions
 
 	if err := u.Update(e, boil.Whitelist(UserCols.Permissions, UserCols.UpdatedAt)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -333,7 +333,7 @@ func DeleteUser(user *modext.User) error {
 // DeleteUserEx deletes the given user.
 func DeleteUserEx(e boil.Executor, user *modext.User) error {
 	if err := user.ToModel().Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
