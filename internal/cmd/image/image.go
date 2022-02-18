@@ -1,11 +1,11 @@
 package main
 
 import (
+	"log"
 	"os"
 	"strconv"
 
 	"github.com/h2non/bimg"
-	"github.com/rs1703/logger"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 
 	buf, err := os.ReadFile(input)
 	if err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 		return
 	}
 
@@ -30,7 +30,7 @@ func main() {
 
 	jpeg, err := bimg.NewImage(buf).Convert(bimg.JPEG)
 	if err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 		return
 	}
 
@@ -45,7 +45,7 @@ func main() {
 	})
 
 	if err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 		return
 	}
 

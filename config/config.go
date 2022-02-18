@@ -4,14 +4,15 @@ import (
 	_ "embed"
 
 	"flag"
+	"log"
 	"os"
+	"os/user"
 	"path/filepath"
 	"strconv"
 	"sync"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/rs1703/logger"
 	"gopkg.in/ini.v1"
 )
 
@@ -85,6 +86,12 @@ var buf []byte
 var config *Config
 var path string
 
+var (
+	User    *user.User
+	UserID  int
+	GroupID int
+)
+
 func init() {
 	p := flag.String("config", "", "Path to config file")
 	m := flag.String("mode", "production", "App mode")
@@ -95,27 +102,40 @@ func init() {
 	if len(path) == 0 {
 		ex, err := os.Executable()
 		if err != nil {
-			logger.Err.Fatalln(err)
+			log.Fatalln(err)
 		}
 		path = filepath.Join(filepath.Dir(ex), "config.ini")
 	}
 
-	_, err := os.Stat(path)
+	var err error
+	User, err = user.Current()
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	UserID, _ = strconv.Atoi(User.Uid)
+	GroupID, _ = strconv.Atoi(User.Gid)
+
+	_, err = os.Stat(path)
 	if os.IsNotExist(err) {
 		dir := filepath.Dir(path)
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			if err := os.MkdirAll(dir, 0755); err != nil {
-				logger.Err.Fatalln(err)
+				log.Fatalln(err)
+			} else if err := os.Chown(dir, UserID, GroupID); err != nil {
+				log.Fatalln(err)
 			}
 		}
-		if err := os.WriteFile(path, buf, 0664); err != nil {
-			logger.Err.Fatalln(err)
+		if err := os.WriteFile(path, buf, 0755); err != nil {
+			log.Fatalln(err)
+		} else if err := os.Chown(path, UserID, GroupID); err != nil {
+			log.Fatalln(err)
 		}
 	}
 
 	var file *ini.File
 	if file, err = ini.Load(path); err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	config = &Config{

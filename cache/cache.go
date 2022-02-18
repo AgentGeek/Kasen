@@ -3,13 +3,13 @@ package cache
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"kasen/config"
 
 	"github.com/bluele/gcache"
 	"github.com/go-redis/redis/v8"
-	"github.com/rs1703/logger"
 )
 
 var (
@@ -33,7 +33,7 @@ func init() {
 	})
 
 	if _, err := Redis.Ping(context.Background()).Result(); err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	ProjectCache = &LRU{gcache.New(512).LRU().Expiration(time.Duration(cacheConfig.DefaultTTL)).Build()}

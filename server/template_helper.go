@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
+	"log"
 	"math"
 	"net/url"
 	"strings"
@@ -14,7 +15,6 @@ import (
 	"kasen/services"
 
 	"github.com/nleeper/goment"
-	"github.com/rs1703/logger"
 	"github.com/yuin/goldmark"
 )
 
@@ -48,7 +48,7 @@ var helper = template.FuncMap{
 	"markdown": func(str string) template.HTML {
 		var buf bytes.Buffer
 		if err := goldmark.Convert([]byte(str), &buf); err != nil {
-			logger.Err.Panicln(err)
+			log.Panicln(err)
 		}
 		return template.HTML(buf.String())
 	},

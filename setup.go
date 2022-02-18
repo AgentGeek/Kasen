@@ -2,18 +2,18 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"kasen/config"
 	"kasen/constants"
 	"kasen/services"
 
 	"github.com/google/uuid"
-	"github.com/rs1703/logger"
 )
 
 func fatalln(err error) {
 	if err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 }
 
@@ -27,7 +27,7 @@ func setup() {
 
 	config.SetInitialized(true)
 	if err := config.Save(); err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	fmt.Println("\nSetup completed")
@@ -68,12 +68,12 @@ func setupUser() {
 
 		user, err := services.CreateUser(params)
 		if err != nil {
-			logger.Err.Println("unable to create account:", err.Error())
+			log.Println("unable to create account:", err.Error())
 			continue
 		}
 
 		if _, err := services.UpdateUserPermissions(user, constants.Perms); err != nil {
-			logger.Err.Fatalln(err)
+			log.Fatalln(err)
 		}
 		break
 	}

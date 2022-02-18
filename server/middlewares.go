@@ -2,11 +2,11 @@ package server
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"kasen/cache"
 
-	"github.com/rs1703/logger"
 	"github.com/ulule/limiter/v3"
 	mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
 	"github.com/ulule/limiter/v3/drivers/store/redis"
@@ -75,14 +75,14 @@ func WithRateLimit(prefix, formatted string) Handler {
 	if !ok {
 		rate, err := limiter.NewRateFromFormatted(formatted)
 		if err != nil {
-			logger.Err.Fatalln(err)
+			log.Fatalln(err)
 		}
 
 		store, err := redis.NewStoreWithOptions(cache.Redis, limiter.StoreOptions{
 			Prefix: prefix,
 		})
 		if err != nil {
-			logger.Err.Fatalln(err)
+			log.Fatalln(err)
 		}
 
 		instance := limiter.New(store, rate, limiter.WithTrustForwardHeader(true))

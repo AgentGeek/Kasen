@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	. "kasen/cache"
@@ -14,7 +15,6 @@ import (
 	"kasen/modext"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
@@ -44,8 +44,6 @@ func GetProjectStatsEx(e boil.Executor, id int64) (result *GetProjectStatsResult
 		return c.(*GetProjectStatsResult)
 	}
 
-	defer logger.Track()()
-
 	result = &GetProjectStatsResult{}
 	defer func() {
 		if result.Stats != nil || result.Err != nil {
@@ -60,7 +58,7 @@ func GetProjectStatsEx(e boil.Executor, id int64) (result *GetProjectStatsResult
 			result.Err = errs.ErrChapterNotFound
 			return
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = err
 		return
 	}
@@ -89,8 +87,6 @@ func GetChapterStatsEx(e boil.Executor, id int64) (result *GetChapterStatsResult
 		return c.(*GetChapterStatsResult)
 	}
 
-	defer logger.Track()()
-
 	result = &GetChapterStatsResult{}
 	defer func() {
 		if result.Stats != nil || result.Err != nil {
@@ -105,7 +101,7 @@ func GetChapterStatsEx(e boil.Executor, id int64) (result *GetChapterStatsResult
 			result.Err = errs.ErrChapterNotFound
 			return
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = err
 		return
 	}

@@ -1,29 +1,33 @@
 package main
 
 import (
+	"log"
 	"os"
 
 	"kasen/controllers"
 	"kasen/controllers/api"
 	"kasen/server"
 	"kasen/services"
-
-	"github.com/rs1703/logger"
 )
 
 func init() {
-	logger.SetOutput("kasen.log")
-
 	os.Setenv("MALLOC_ARENA_MAX", "2")
-	os.MkdirAll(services.GetTempDir(), os.ModePerm)
-	os.MkdirAll(services.GetChaptersSymlinksDir(), os.ModePerm)
+
+	if err := services.MkdirAll(services.GetTempDir()); err != nil {
+		log.Fatalln(err)
+	}
+
+	if err := services.MkdirAll(services.GetChaptersSymlinksDir()); err != nil {
+		log.Fatalln(err)
+	}
 
 	setup()
 }
 
 func main() {
-	server.Init()
+	services.RemapSymlinks()
 
+	server.Init()
 	controllers.Init()
 	api.Init()
 

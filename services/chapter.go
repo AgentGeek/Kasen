@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
-
 	"strings"
 	"time"
 
@@ -27,7 +27,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gosimple/slug"
 	"github.com/pkg/errors"
-	"github.com/rs1703/logger"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -126,7 +125,7 @@ func (draft *ChapterDraft) validate() error {
 func CreateChapter(pid int64, draft ChapterDraft, uploader *modext.User) (*modext.Chapter, error) {
 	tx, err := WriteDB.Begin()
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return CreateChapterEx(tx, pid, draft, uploader)
@@ -146,7 +145,7 @@ func refreshChapterRels(tx *sql.Tx, c *models.Chapter, draft *ChapterDraft) erro
 		})
 	}
 	if err := c.SetScanlationGroups(tx, false, scanlationGroups...); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -155,8 +154,6 @@ func refreshChapterRels(tx *sql.Tx, c *models.Chapter, draft *ChapterDraft) erro
 
 // CreateChapterEx creates a chapter for the given project.
 func CreateChapterEx(tx *sql.Tx, pid int64, draft ChapterDraft, uploader *modext.User) (*modext.Chapter, error) {
-	defer logger.Track()()
-
 	if err := draft.validate(); err != nil {
 		return nil, err
 	}
@@ -166,7 +163,7 @@ func CreateChapterEx(tx *sql.Tx, pid int64, draft ChapterDraft, uploader *modext
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrProjectNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -182,7 +179,7 @@ func CreateChapterEx(tx *sql.Tx, pid int64, draft ChapterDraft, uploader *modext
 	}
 
 	if err := c.Insert(tx, boil.Infer()); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -191,7 +188,7 @@ func CreateChapterEx(tx *sql.Tx, pid int64, draft ChapterDraft, uploader *modext
 	}
 
 	if err := tx.Commit(); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -234,8 +231,6 @@ func GetChapterEx(e boil.Executor, cid int64, opts GetChapterOptions) (result *G
 		return c.(*GetChapterResult)
 	}
 
-	defer logger.Track()()
-
 	result = &GetChapterResult{}
 	defer func() {
 		if result.Chapter != nil || result.Err != nil {
@@ -268,7 +263,7 @@ func GetChapterEx(e boil.Executor, cid int64, opts GetChapterOptions) (result *G
 			result.Err = errs.ErrChapterNotFound
 			return
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = errs.ErrUnknown
 		return
 	}
@@ -291,7 +286,7 @@ func GetChapterMd(id string) (*ChapterDraft, error) {
 
 	res, err := http.Get(fmt.Sprintf("%s/chapter/%s?includes[]=scanlation_group", mdBaseURL, id))
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrChapterMdFetchFailed
 	}
 	defer res.Body.Close()
@@ -491,8 +486,6 @@ func GetChaptersEx(e boil.Executor, opts GetChaptersOptions) (result *GetChapter
 		return c.(*GetChaptersResult)
 	}
 
-	defer logger.Track()()
-
 	result = &GetChaptersResult{Chapters: []*modext.Chapter{}}
 	defer func() {
 		if len(result.Chapters) > 0 || result.Total > 0 || result.Err != nil {
@@ -504,14 +497,14 @@ func GetChaptersEx(e boil.Executor, opts GetChaptersOptions) (result *GetChapter
 	selectQueries, countQueries := opts.toQueries()
 	chapters, err := models.Chapters(selectQueries...).All(e)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = errs.ErrUnknown
 		return
 	}
 
 	count, err := models.Chapters(countQueries...).Count(e)
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		result.Err = errs.ErrUnknown
 		return
 	}
@@ -615,7 +608,7 @@ func GetChaptersMd(mangaId string) ([]*ChapterMd, error) {
 func UpdateChapter(id int64, draft *ChapterDraft, user *modext.User) (*modext.Chapter, error) {
 	tx, err := WriteDB.Begin()
 	if err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 	return UpdateChapterEx(tx, id, draft, user)
@@ -627,8 +620,6 @@ func UpdateChapter(id int64, draft *ChapterDraft, user *modext.User) (*modext.Ch
 // This function will return an error if the chapter is locked.
 // It will also return an error if the user does not have the necessary permissions.
 func UpdateChapterEx(tx *sql.Tx, id int64, draft *ChapterDraft, user *modext.User) (*modext.Chapter, error) {
-	defer logger.Track()()
-
 	if err := draft.validate(); err != nil {
 		return nil, err
 	}
@@ -638,7 +629,7 @@ func UpdateChapterEx(tx *sql.Tx, id int64, draft *ChapterDraft, user *modext.Use
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrChapterNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -666,17 +657,17 @@ func UpdateChapterEx(tx *sql.Tx, id int64, draft *ChapterDraft, user *modext.Use
 		ChapterCols.Title,
 		ChapterCols.UpdatedAt,
 	)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
 	if err := refreshChapterRels(tx, c, draft); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
 	if err := tx.Commit(); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -699,14 +690,12 @@ func PublishChapter(id int64, user *modext.User) (*modext.Chapter, error) {
 // This function will return an error if the chapter is locked.
 // It will also return an error if the user does not have the necessary permissions.
 func PublishChapterEx(e boil.Executor, id int64, user *modext.User) (*modext.Chapter, error) {
-	defer logger.Track()()
-
 	c, err := models.FindChapter(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrChapterNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -724,7 +713,7 @@ func PublishChapterEx(e boil.Executor, id int64, user *modext.User) (*modext.Cha
 	c.PublishedAt = null.TimeFrom(time.Now().UTC())
 
 	if err := c.Update(e, boil.Whitelist(ChapterCols.PublishedAt)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -744,14 +733,12 @@ func UnpublishChapter(id int64, user *modext.User) (*modext.Chapter, error) {
 // This function will return an error if the chapter is locked.
 // It will also return an error if the user does not have the necessary permissions.
 func UnpublishChapterEx(e boil.Executor, id int64, user *modext.User) (*modext.Chapter, error) {
-	defer logger.Track()()
-
 	c, err := models.FindChapter(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrChapterNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -769,7 +756,7 @@ func UnpublishChapterEx(e boil.Executor, id int64, user *modext.User) (*modext.C
 	c.PublishedAt.Valid = false
 
 	if err := c.Update(e, boil.Whitelist(ChapterCols.PublishedAt)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -788,14 +775,12 @@ func LockChapter(id int64, user *modext.User) (*modext.Chapter, error) {
 //
 // This function will return an error if the user does not have the necessary permissions.
 func LockChapterEx(e boil.Executor, id int64, user *modext.User) (*modext.Chapter, error) {
-	defer logger.Track()()
-
 	c, err := models.FindChapter(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrChapterNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -809,7 +794,7 @@ func LockChapterEx(e boil.Executor, id int64, user *modext.User) (*modext.Chapte
 	c.Locked = null.BoolFrom(true)
 
 	if err := c.Update(e, boil.Whitelist(ChapterCols.Locked)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -828,14 +813,12 @@ func UnlockChapter(id int64, user *modext.User) (*modext.Chapter, error) {
 //
 // This function will return an error if the user does not have the necessary permissions.
 func UnlockChapterEx(e boil.Executor, id int64, user *modext.User) (*modext.Chapter, error) {
-	defer logger.Track()()
-
 	c, err := models.FindChapter(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, errs.ErrChapterNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -849,7 +832,7 @@ func UnlockChapterEx(e boil.Executor, id int64, user *modext.User) (*modext.Chap
 	c.Locked = null.NewBool(false, false)
 
 	if err := c.Update(e, boil.Whitelist(ChapterCols.Locked)); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return nil, errs.ErrUnknown
 	}
 
@@ -868,14 +851,12 @@ func DeleteChapter(id int64, user *modext.User) error {
 // This function will return an error if the chapter is locked.
 // It will also return an error if the user does not have the necessary permissions.
 func DeleteChapterEx(e boil.Executor, id int64, user *modext.User) error {
-	defer logger.Track()()
-
 	c, err := models.FindChapter(e, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return errs.ErrChapterNotFound
 		}
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 
@@ -890,7 +871,7 @@ func DeleteChapterEx(e boil.Executor, id int64, user *modext.User) error {
 	}
 
 	if err := c.Delete(e); err != nil {
-		logger.Err.Println(err)
+		log.Println(err)
 		return errs.ErrUnknown
 	}
 

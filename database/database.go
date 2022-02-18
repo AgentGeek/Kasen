@@ -5,11 +5,11 @@ import (
 
 	"database/sql"
 	"fmt"
+	"log"
 
 	"kasen/config"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
-	"github.com/rs1703/logger"
 )
 
 type Database struct {
@@ -29,24 +29,24 @@ func init() {
 
 	readConn, err := sql.Open("pgx", dsn)
 	if err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	if err := readConn.Ping(); err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	writeConn, err := sql.Open("pgx", dsn)
 	if err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	if err := writeConn.Ping(); err != nil {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	if _, err = writeConn.Exec(string(schema)); err != nil && err != sql.ErrNoRows {
-		logger.Err.Fatalln(err)
+		log.Fatalln(err)
 	}
 
 	ReadDB = &Database{readConn}
