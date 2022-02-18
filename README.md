@@ -162,12 +162,12 @@ You need **Node.js** and **Yarn** to be able to build the front-end.
 # Build
 cd web
 yarn && yarn prod
-mv ../bin/assets ../bin/templates -t /var/lib/kasen
+sudo mv ../bin/assets ../bin/templates -t /var/lib/kasen
 sudo chown -R kasen:kasen /var/lib/kasen
 sudo chmod -R 755 /var/lib/kasen/{assets,templates}
 
 # Download
-wget -O front-end.tar.xz https://github.com/rs1703/Kasen/releases/download/v0.1.0/front-end.tar.xz
+wget -O front-end.tar.xz https://github.com/rs1703/Kasen/releases/download/v0.1.1/front-end.tar.xz
 sudo tar -xf front-end.tar.xz -C /var/lib/kasen
 sudo chown -R kasen:kasen /var/lib/kasen
 sudo chmod -R 755 /var/lib/kasen/{assets,templates}
