@@ -167,7 +167,7 @@ sudo chown -R kasen:kasen /var/lib/kasen
 sudo chmod -R 755 /var/lib/kasen/{assets,templates}
 
 # Download
-wget -O front-end.tar.xz https://github.com/rs1703/Kasen/releases/download/v0.1.1/front-end.tar.xz
+wget -O front-end.tar.xz https://github.com/rs1703/Kasen/releases/download/v0.1.2/front-end.tar.xz
 sudo tar -xf front-end.tar.xz -C /var/lib/kasen
 sudo chown -R kasen:kasen /var/lib/kasen
 sudo chmod -R 755 /var/lib/kasen/{assets,templates}
