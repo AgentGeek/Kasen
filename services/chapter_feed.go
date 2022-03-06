@@ -10,7 +10,7 @@ import (
 	"github.com/gorilla/feeds"
 )
 
-func CreateChapterFeed() *feeds.Feed {
+func CreateChapterFeed(opts GetChaptersOptions) *feeds.Feed {
 	meta := config.GetMeta()
 
 	feed := &feeds.Feed{
@@ -19,9 +19,7 @@ func CreateChapterFeed() *feeds.Feed {
 		Description: fmt.Sprintf("RSS feed for %s chapters", meta.Title),
 	}
 
-	r := GetChapters(GetChaptersOptions{
-		Preloads: []string{ChapterRels.Project},
-	})
+	r := GetChapters(opts)
 	for _, c := range r.Chapters {
 		feed.Items = append(feed.Items, &feeds.Item{
 			Id:    strconv.Itoa(int(c.ID)),
