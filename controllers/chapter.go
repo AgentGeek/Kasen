@@ -115,6 +115,29 @@ type ChaptersQueries struct {
 	Order    string   `form:"order"`
 }
 
+const chapterLimit = 24
+
+func (q *ChaptersQueries) toOpts() *services.GetChaptersOptions {
+	return &services.GetChaptersOptions{
+		Uploader: q.Uploader,
+		Groups:   q.Groups,
+
+		Limit:  chapterLimit,
+		Offset: chapterLimit * (q.Page - 1),
+
+		Sort:  q.Sort,
+		Order: q.Order,
+
+		Preloads: []string{
+			services.ChapterRels.Uploader,
+			services.ChapterRels.ScanlationGroups,
+		},
+
+		GetThumbnail: true,
+		GetTags:      true,
+	}
+}
+
 func Chapters(c *server.Context) {
 	templateName := "chapters.html"
 	if c.TryCache(templateName) {
@@ -127,29 +150,11 @@ func Chapters(c *server.Context) {
 	c.SetData("query", q)
 	c.SetData("hasQueries", len(q.Uploader) > 0 || len(q.Groups) > 0)
 
-	limit := 24
-	result := services.GetChapters(services.GetChaptersOptions{
-		Uploader: q.Uploader,
-		Groups:   q.Groups,
-
-		Limit:  limit,
-		Offset: limit * (q.Page - 1),
-
-		Sort:  q.Sort,
-		Order: q.Order,
-
-		Preloads: []string{
-			services.ChapterRels.Uploader,
-			services.ChapterRels.ScanlationGroups,
-		},
-
-		GetThumbnail: true,
-		GetTags:      true,
-	})
+	result := services.GetChapters(*q.toOpts())
 	c.SetData("chapters", result.Chapters)
 	c.SetData("total", result.Total)
 
-	totalPages := int(math.Ceil(float64(result.Total) / float64(limit)))
+	totalPages := int(math.Ceil(float64(result.Total) / float64(chapterLimit)))
 	c.SetData("pagination", services.CreatePagination(q.Page, totalPages))
 
 	c.Cache(http.StatusOK, templateName)

@@ -133,14 +133,43 @@ type ProjectsQueries struct {
 	Order                 string   `form:"order"`
 }
 
-func Projects(c *server.Context) {
-	q := &ProjectsQueries{}
-	c.BindQuery(q)
+const projectLimit = 24
 
+func (q *ProjectsQueries) toOpts() *services.GetProjectsOptions {
+	return &services.GetProjectsOptions{
+		Title:                 q.Title,
+		ProjectStatus:         q.ProjectStatus,
+		SeriesStatus:          q.SeriesStatus,
+		Demographic:           q.Demographic,
+		Rating:                q.Rating,
+		ExcludedProjectStatus: q.ExcludedProjectStatus,
+		ExcludedSeriesStatus:  q.ExcludedSeriesStatus,
+		ExcludedDemographic:   q.ExcludedDemographic,
+		ExcludedRating:        q.ExcludedRating,
+		Artists:               q.Artists,
+		Authors:               q.Authors,
+		Tags:                  q.Tags,
+		ExcludedTags:          q.ExcludedTags,
+		Limit:                 projectLimit,
+		Offset:                projectLimit * (q.Page - 1),
+		Sort:                  q.Sort,
+		Order:                 q.Order,
+
+		Preloads: []string{
+			services.ProjectRels.Cover,
+			services.ProjectRels.Tags,
+		},
+	}
+}
+
+func Projects(c *server.Context) {
 	templateName := "projects.html"
 	if c.TryCache(templateName) {
 		return
 	}
+
+	q := &ProjectsQueries{}
+	c.BindQuery(q)
 
 	c.SetData("queries", q)
 	c.SetData("hasQueries",
@@ -158,35 +187,11 @@ func Projects(c *server.Context) {
 			len(q.Tags) > 0 ||
 			len(q.ExcludedTags) > 0)
 
-	limit := 24
-	result := services.GetProjects(services.GetProjectsOptions{
-		Title:                 q.Title,
-		ProjectStatus:         q.ProjectStatus,
-		SeriesStatus:          q.SeriesStatus,
-		Demographic:           q.Demographic,
-		Rating:                q.Rating,
-		ExcludedProjectStatus: q.ExcludedProjectStatus,
-		ExcludedSeriesStatus:  q.ExcludedSeriesStatus,
-		ExcludedDemographic:   q.ExcludedDemographic,
-		ExcludedRating:        q.ExcludedRating,
-		Artists:               q.Artists,
-		Authors:               q.Authors,
-		Tags:                  q.Tags,
-		ExcludedTags:          q.ExcludedTags,
-		Limit:                 limit,
-		Offset:                limit * (q.Page - 1),
-		Sort:                  q.Sort,
-		Order:                 q.Order,
-
-		Preloads: []string{
-			services.ProjectRels.Cover,
-			services.ProjectRels.Tags,
-		},
-	})
+	result := services.GetProjects(*q.toOpts())
 	c.SetData("projects", result.Projects)
 	c.SetData("total", result.Total)
 
-	totalPages := int(math.Ceil(float64(result.Total) / float64(limit)))
+	totalPages := int(math.Ceil(float64(result.Total) / float64(projectLimit)))
 	c.SetData("pagination", services.CreatePagination(q.Page, totalPages))
 
 	tags, _ := services.GetTags()

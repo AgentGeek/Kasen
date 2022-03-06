@@ -19,9 +19,15 @@ func createFeed(c *server.Context, isAtom bool) {
 
 	var feed *feeds.Feed
 	if strings.EqualFold(t, "projects") {
-		feed = services.CreateProjectFeed()
+		q := &ProjectsQueries{}
+		c.BindQuery(q)
+
+		feed = services.CreateProjectFeed(*q.toOpts())
 	} else {
-		feed = services.CreateChapterFeed()
+		q := &ChaptersQueries{}
+		c.BindQuery(q)
+
+		feed = services.CreateChapterFeed(*q.toOpts())
 	}
 
 	var str string
