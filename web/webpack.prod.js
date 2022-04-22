@@ -7,9 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
 config.mode = "production";
-config.output.filename = pathData => {
-  return pathData.chunk.name.includes("serviceWorker") ? "js/serviceWorker.js" : "js/[name].[contenthash].js";
-};
+config.output.filename = () => "js/[name].[contenthash].js";
 
 config.plugins.push(
   new MiniCssExtractPlugin({

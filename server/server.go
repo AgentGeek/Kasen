@@ -57,7 +57,6 @@ func Init() {
 	assets.Static("/js", filepath.Join(directories.Root, "assets/js"))
 	assets.Static("/css", filepath.Join(directories.Root, "assets/css"))
 	assets.Static("/uploads", filepath.Join(directories.Root, "assets/uploads"))
-	assets.StaticFile("/serviceWorker.js", filepath.Join(directories.Root, "assets/js/serviceWorker.js"))
 
 	if gin.Mode() == gin.DebugMode {
 		group := server.Group("/debug/pprof")

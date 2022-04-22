@@ -3,7 +3,11 @@ import "./styles/common.less";
 
 const initCommon = () => {
   if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("/serviceWorker.js");
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      for (let i = 0; i < registrations.length; i++) {
+        registrations[i].unregister();
+      }
+    });
   }
   feather.replace({ "stroke-width": 3 });
 };
