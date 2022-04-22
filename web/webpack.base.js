@@ -9,8 +9,7 @@ module.exports = {
     main: path.resolve(__dirname, "src/main.ts"),
     common: path.resolve(__dirname, "src/common.ts"),
     manage: path.resolve(__dirname, "src/Manage.tsx"),
-    reader: path.resolve(__dirname, "src/Reader.tsx"),
-    serviceWorker: path.resolve(__dirname, "src/serviceWorker.ts")
+    reader: path.resolve(__dirname, "src/Reader.tsx")
   },
   output: {
     clean: true,
